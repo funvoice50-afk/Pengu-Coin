@@ -1,918 +1,355 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Not Coin Task Bot</title>
+    <title>CashReward অ্যাডমিন প্যানেল</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 430px;
-            margin: 0 auto;
-            background-color: white;
-            min-height: 100vh;
-            position: relative;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        
-        .header {
-            background-color: #0088cc;
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .balance {
-            background-color: #f8f8f8;
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .balance h2 {
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-        
-        .balance-amount {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0088cc;
-        }
-        
-        .content {
-            padding: 15px;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #0088cc;
-        }
-        
-        .checkin-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        .checkin-day {
-            background-color: #f0f0f0;
-            padding: 10px;
-            text-align: center;
-            border-radius: 5px;
-        }
-        
-        .checkin-day.active {
-            background-color: #0088cc;
-            color: white;
-        }
-        
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #0088cc;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            margin: 15px 0;
-            cursor: pointer;
-        }
-        
-        .btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .stat-card {
-            background-color: #f8f8f8;
-            padding: 15px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0088cc;
-            margin: 5px 0;
-        }
-        
-        .nav {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 430px;
-            display: flex;
-            justify-content: space-around;
-            background-color: white;
-            padding: 10px 0;
-            border-top: 1px solid #eee;
-        }
-        
-        .nav-item {
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-        }
-        
-        .nav-item.active {
-            color: #0088cc;
-        }
-        
-        .task-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .task-info {
-            flex: 1;
-        }
-        
-        .task-reward {
-            color: #0088cc;
-            font-weight: bold;
-        }
-        
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        
-        .referral-steps {
-            margin: 15px 0;
-        }
-        
-        .step {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        
-        .step-number {
-            background-color: #0088cc;
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-        
-        .referral-link {
-            background-color: #f8f8f8;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 15px 0;
-            word-break: break-all;
-        }
-        
-        .social-buttons {
-            display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
-        }
-        
-        .social-btn {
-            padding: 10px 15px;
-            background-color: #f0f0f0;
-            border: none;
-            border-radius: 5px;
-        }
-        
-        .payment-method {
-            display: flex;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .payment-method input {
-            margin-right: 10px;
-        }
-        
-        .ad-container {
-            margin: 20px 0;
-            padding: 15px;
-            background-color: #f0f0f0;
-            border-radius: 8px;
-            text-align: center;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .sidebar { background-color: #1f2937; color: #d1d5db; }
+        .sidebar a { border-left: 3px solid transparent; transition: all 0.2s; }
+        .sidebar a:hover { background-color: #374151; }
+        .sidebar a.active { background-color: #4f46e5; color: white; border-left-color: #818cf8; }
+        .stat-card { background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.5s; }
+        .btn { padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; transition: all 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-primary { background-color: #4f46e5; color: white; }
+        .btn-primary:hover { background-color: #4338ca; }
+        .btn-success { background-color: #10b981; color: white; }
+        .btn-danger { background-color: #ef4444; color: white; }
+        .btn-warning { background-color: #f59e0b; color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        th { background-color: #f9fafb; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
-    <div class="container" id="app">
-        <!-- Home Screen -->
-        <div id="home-screen">
-            <div class="header">
-                <span>Close</span>
-                <span>Not Coin</span>
-                <span>Menu</span>
-            </div>
-            
-            <div class="balance">
-                <h2>Balance</h2>
-                <div class="balance-amount" id="balance">0 NOT</div>
-            </div>
-            
-            <div class="content">
-                <h2 class="section-title">Daily Check-in Bonus</h2>
-                <p>Claim your daily reward and keep your streak!</p>
-                
-                <div class="checkin-grid">
-                    <div class="checkin-day">Day 1<br>+2 NOT</div>
-                    <div class="checkin-day">Day 2<br>+2 NOT</div>
-                    <div class="checkin-day">Day 3<br>+2 NOT</div>
-                    <div class="checkin-day">Day 4<br>+2 NOT</div>
-                    <div class="checkin-day">Day 5<br>+2 NOT</div>
-                    <div class="checkin-day">Day 6<br>+2 NOT</div>
-                    <div class="checkin-day">Day 7<br>+2 NOT</div>
-                    <div class="checkin-day">Day 15<br>+2 NOT</div>
-                    <div class="checkin-day">Day 17<br>+2 NOT</div>
-                    <div class="checkin-day">Day 20<br>+2 NOT</div>
-                </div>
-                
-                <button class="btn" id="checkin-btn">Wait For Next Day</button>
-                
-                <h2 class="section-title">Invite Friends & Earn</h2>
-                <p>Get 5% of their earnings</p>
-                
-                <button class="btn" onclick="showScreen('refer-screen')">Start Referring</button>
-            </div>
+
+    <div id="admin-login-view" class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+            <h1 class="text-3xl font-bold text-center text-gray-900">অ্যাডমিন প্যানেল লগইন</h1>
+            <input id="admin-email" type="email" placeholder="অ্যাডমিন ইমেইল" class="w-full px-4 py-2 border rounded-lg">
+            <input id="admin-password" type="password" placeholder="পাসওয়ার্ড" class="w-full px-4 py-2 border rounded-lg">
+            <button id="admin-login-btn" class="w-full btn btn-primary">লগইন</button>
         </div>
-        
-        <!-- Ads Task Screen -->
-        <div id="ads-screen" style="display: none;">
-            <div class="header">
-                <span onclick="showScreen('home-screen')">Back</span>
-                <span>Ads Tasks</span>
-                <span>Menu</span>
-            </div>
-            
-            <div class="balance">
-                <h2>Balance</h2>
-                <div class="balance-amount" id="ads-balance">0 NOT</div>
-            </div>
-            
-            <div class="content">
-                <h2 class="section-title">Ads Task Overview</h2>
-                
-                <div class="task-item">
-                    <div class="task-info">
-                        <strong>Daily Tasks</strong>
-                        <p>Completed</p>
+    </div>
+
+    <div id="admin-dashboard" class="hidden">
+        <div class="flex h-screen">
+            <aside class="sidebar w-64 flex-shrink-0">
+                <div class="p-4 text-2xl font-bold text-white">CashReward</div>
+                <nav class="mt-8">
+                    <a href="#" class="nav-link block py-3 px-4" data-page="dashboard-page"><i data-lucide="home" class="inline-block w-5 h-5 mr-2"></i>ড্যাশবোর্ড</a>
+                    <a href="#" class="nav-link block py-3 px-4" data-page="users-page"><i data-lucide="users" class="inline-block w-5 h-5 mr-2"></i>ব্যবহারকারীরা</a>
+                    <a href="#" class="nav-link block py-3 px-4" data-page="withdrawals-page"><i data-lucide="dollar-sign" class="inline-block w-5 h-5 mr-2"></i>উত্তোলন সমূহ</a>
+                    <a href="#" class="nav-link block py-3 px-4" data-page="notifications-page"><i data-lucide="send" class="inline-block w-5 h-5 mr-2"></i>নোটিফিকেশন</a>
+                    <a href="#" class="nav-link block py-3 px-4" data-page="settings-page"><i data-lucide="settings" class="inline-block w-5 h-5 mr-2"></i>সেটিংস</a>
+                    <a href="#" id="admin-logout-btn" class="block py-3 px-4 mt-8"><i data-lucide="log-out" class="inline-block w-5 h-5 mr-2"></i>লগআউট</a>
+                </nav>
+            </aside>
+
+            <main class="flex-1 p-8 overflow-y-auto">
+                <div id="dashboard-page" class="page">
+                    <h1 class="text-3xl font-bold mb-6">ড্যাশবোর্ড</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="stat-card p-6"><h2 class="text-gray-500 text-lg">মোট ব্যবহারকারী</h2><p id="total-users" class="text-4xl font-bold mt-2">0</p></div>
+                        <div class="stat-card p-6"><h2 class="text-gray-500 text-lg">বিচারাধীন উত্তোলন</h2><p id="pending-withdrawals" class="text-4xl font-bold mt-2">0</p></div>
                     </div>
-                    <div class="task-reward" id="daily-tasks">0/30</div>
                 </div>
-                
-                <div class="task-item">
-                    <div class="task-info">
-                        <strong>Lifetime Tasks</strong>
-                        <p>Completed Tasks</p>
+
+                <div id="users-page" class="page">
+                    <h1 class="text-3xl font-bold mb-6">ব্যবহারকারী ব্যবস্থাপনা</h1>
+                    <div class="bg-white shadow rounded-lg overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead><tr><th>নাম</th><th>ইমেইল</th><th>ব্যালেন্স</th><th>স্ট্যাটাস</th><th>ক্রিয়াকলাপ</th></tr></thead>
+                            <tbody id="users-table-body"></tbody>
+                        </table>
                     </div>
-                    <div class="task-reward" id="lifetime-tasks">0</div>
                 </div>
-                
-                <div class="task-item">
-                    <div class="task-info">
-                        <strong>Hourly Tasks</strong>
-                        <p>Completed</p>
+
+                <div id="withdrawals-page" class="page">
+                    <h1 class="text-3xl font-bold mb-6">উত্তোলনের অনুরোধসমূহ</h1>
+                     <div class="bg-white shadow rounded-lg overflow-x-auto">
+                        <table>
+                            <thead><tr><th>ব্যবহারকারীর নাম</th><th>পরিমাণ</th><th>পদ্ধতি</th><th>বিবরণ</th><th>অনুরোধের সময়</th><th>ক্রিয়াকলাপ</th></tr></thead>
+                            <tbody id="withdrawals-table-body"></tbody>
+                        </table>
                     </div>
-                    <div class="task-reward" id="hourly-tasks">0/15</div>
                 </div>
-                
-                <div class="task-item">
-                    <div class="task-info">
-                        <strong>Total Earnings</strong>
+
+                <div id="notifications-page" class="page">
+                    <h1 class="text-3xl font-bold mb-6">নোটিফিকেশন পাঠান</h1>
+                    <div class="stat-card p-6 max-w-lg">
+                        <div class="mb-4"><label for="notification-title" class="block font-semibold mb-2">শিরোনাম</label><input type="text" id="notification-title" class="w-full px-4 py-2 border rounded-lg"></div>
+                        <div class="mb-6"><label for="notification-message" class="block font-semibold mb-2">বার্তা</label><textarea id="notification-message" rows="4" class="w-full px-4 py-2 border rounded-lg"></textarea></div>
+                        <button id="send-notification-btn" class="btn btn-primary">সব ব্যবহারকারীকে পাঠান</button>
                     </div>
-                    <div class="task-reward" id="total-earnings">0 NOT</div>
                 </div>
-                
-                <div style="text-align: center; margin-top: 20px; color: #ff5555;">
-                    <strong>Daily Limit Reached</strong>
-                </div>
-                
-                <div class="ad-container" id="ad-container">
-                    <p>Watch an ad to earn NOT coins</p>
-                    <button class="btn" onclick="showAdAndReward()" id="task-btn">Watch Ad (+3 NOT)</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Telegram Tasks Screen -->
-        <div id="tg-screen" style="display: none;">
-            <div class="header">
-                <span onclick="showScreen('home-screen')">Back</span>
-                <span>Telegram Tasks</span>
-                <span>Menu</span>
-            </div>
-            
-            <div class="balance">
-                <h2>Balance</h2>
-                <div class="balance-amount" id="tg-balance">0 NOT</div>
-            </div>
-            
-            <div class="content" style="text-align: center;">
-                <h2 class="section-title">Telegram Tasks</h2>
-                <p>No tasks available</p>
-                
-                <div style="margin-top: 30px;">
-                    <p>Join our Telegram channel to get 4 NOT free!</p>
-                    <button class="btn" onclick="window.open('https://t.me/PENGUIN70', '_blank')">Join Channel</button>
-                </div>
-                
-                <div style="margin-top: 30px;">
-                    <button class="btn" onclick="verifyTelegram()" id="verify-btn">Verify Join (+4 NOT)</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Refer Screen -->
-        <div id="refer-screen" style="display: none;">
-            <div class="header">
-                <span onclick="showScreen('home-screen')">Back</span>
-                <span>Refer & Earn</span>
-                <span>Menu</span>
-            </div>
-            
-            <div class="balance">
-                <h2>Balance</h2>
-                <div class="balance-amount" id="refer-balance">0 NOT</div>
-            </div>
-            
-            <div class="content">
-                <h2 class="section-title">Refer & Earn Forever</h2>
-                <p>Earn 5% of your friends earnings for life!</p>
-                <p>Follow these simple steps to start:</p>
-                
-                <div class="referral-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div>
-                            <strong>Copy Your Link</strong>
-                            <p>Grab your unique referral link below.</p>
+
+                <div id="settings-page" class="page">
+                    <h1 class="text-3xl font-bold mb-6">অ্যাপ সেটিংস</h1>
+                    <div class="stat-card p-6 max-w-lg">
+                        <div class="mb-6"><label for="min-withdrawal" class="block font-semibold mb-2">সর্বনিম্ন উত্তোলন (কয়েন)</label><input type="number" id="min-withdrawal" class="w-full px-4 py-2 border rounded-lg"></div>
+                        <div class="mb-6"><label for="daily-ad-limit" class="block font-semibold mb-2">দৈনিক বিজ্ঞাপন সীমা</label><input type="number" id="daily-ad-limit" class="w-full px-4 py-2 border rounded-lg"></div>
+                        <div class="mb-6">
+                            <label class="block font-semibold mb-2">কয়েনের মান</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" id="coin-value-coins" class="w-full px-4 py-2 border rounded-lg">
+                                <span>কয়েন = ৳</span>
+                                <input type="number" id="coin-value-bdt" class="w-full px-4 py-2 border rounded-lg">
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div>
-                            <strong>Share with Friends</strong>
-                            <p>Use the Telegram, WhatsApp, or Twitter/X buttons to share your link.</p>
-                        </div>
-                    </div>
-                    
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div>
-                            <strong>Earn Lifetime Rewards</strong>
-                            <p>Get 5% of your friends earnings forever once they join!</p>
-                        </div>
+                        <div class="mb-6"><label class="block font-semibold mb-2">পেমেন্ট পদ্ধতি (কমা দ্বারা পৃথক)</label><input type="text" id="payment-methods" class="w-full px-4 py-2 border rounded-lg" placeholder="যেমন: bKash, Nagad, Rocket"></div>
+                        <button id="save-settings-btn" class="btn btn-primary">সেটিংস সংরক্ষণ করুন</button>
                     </div>
                 </div>
-                
-                <h3>Your Referral Link</h3>
-                <div class="referral-link" id="referral-link">
-                    https://t.me/penguco_bot?start=ref_<span id="user-ref-id">USER123</span>
-                </div>
-                
-                <div class="social-buttons">
-                    <button class="social-btn" onclick="shareTelegram()">Telegram</button>
-                    <button class="social-btn" onclick="shareWhatsApp()">WhatsApp</button>
-                    <button class="social-btn" onclick="shareTwitter()">Twitter/X</button>
-                </div>
-                
-                <h3>Referrals List</h3>
-                <input type="text" class="input-field" placeholder="Search referrals by username...">
-                
-                <div id="referral-stats" style="margin-top: 20px;">
-                    <h4>Your Referral Earnings: <span id="ref-earnings">0</span> NOT</h4>
-                </div>
-            </div>
+            </main>
         </div>
-        
-        <!-- Withdraw Screen -->
-        <div id="withdraw-screen" style="display: none;">
-            <div class="header">
-                <span onclick="showScreen('home-screen')">Back</span>
-                <span>Withdraw</span>
-                <span>Menu</span>
-            </div>
-            
-            <div class="balance">
-                <h2>Balance</h2>
-                <div class="balance-amount" id="withdraw-balance">0 NOT</div>
-            </div>
-            
-            <div class="content">
-                <h2 class="section-title">Withdraw Funds</h2>
-                
-                <h3>Amount</h3>
-                <input type="number" class="input-field" id="withdraw-amount" placeholder="Enter amount">
-                <p>Minimum: 150 NOT</p>
-                
-                <h3>Withdrawal Address</h3>
-                <input type="text" class="input-field" id="withdraw-address" placeholder="Enter wallet or account address">
-                <p>Enter the address for your selected payment method (e.g., wallet address for Binance, email for PayPal)</p>
-                
-                <h3>Payment Method</h3>
-                <div class="payment-method">
-                    <input type="radio" name="payment" id="binance" checked>
-                    <label for="binance">Binance</label>
-                </div>
-                
-                <div class="payment-method">
-                    <input type="radio" name="payment" id="atani">
-                    <label for="atani">Atani (ID: 1021)</label>
-                </div>
-                
-                <button class="btn" onclick="requestWithdrawal()">Request Withdrawal</button>
-            </div>
+    </div>
+    
+    <div id="custom-alert" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm text-center shadow-xl">
+            <p id="alert-message" class="mb-4 text-gray-800"></p>
+            <button id="alert-ok-btn" class="btn btn-primary px-6">ঠিক আছে</button>
         </div>
-        
-        <!-- Profile Screen -->
-        <div id="profile-screen" style="display: none;">
-            <div class="header">
-                <span onclick="showScreen('home-screen')">Back</span>
-                <span>Profile</span>
-                <span>Menu</span>
-            </div>
-            
-            <div class="balance">
-                <h2>Balance</h2>
-                <div class="balance-amount" id="profile-balance">0 NOT</div>
-            </div>
-            
-            <div class="content">
-                <h2 class="section-title">Not Coin</h2>
-                <p style="text-align: center; margin-bottom: 20px;">Joined July 29, 2025</p>
-                
-                <h2 class="section-title">Your Statistics</h2>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <p>Total Earned</p>
-                        <div class="stat-value" id="total-earned">0</div>
-                        <p>NOT</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <p>Current Streak</p>
-                        <div class="stat-value" id="current-streak">0</div>
-                        <p>days</p>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <p>Tasks Done</p>
-                        <div class="stat-value" id="tasks-done">0</div>
-                    </div>
-                    
-                    <div class="stat-card">
-                        <p>Referrals</p>
-                        <div class="stat-value" id="referrals-count">0</div>
-                    </div>
-                </div>
-                
-                <h3 style="margin-top: 30px;">Help Center</h3>
-                
-                <h4 style="margin-top: 15px;">Developer Contact</h4>
-                <p>Telegram: @shap642</p>
-                <p>Atani ID: 1021</p>
-                
-                <button class="btn" style="background-color: #ff5555; margin-top: 30px;" onclick="logout()">Log Out</button>
-            </div>
-        </div>
-        
-        <!-- Navigation -->
-        <div class="nav">
-            <div class="nav-item active" onclick="showScreen('home-screen')">
-                <div>Home</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('ads-screen')">
-                <div>Ads Task</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('tg-screen')">
-                <div>TG Tasks</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('refer-screen')">
-                <div>Refer</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('withdraw-screen')">
-                <div>Withdraw</div>
-            </div>
-            <div class="nav-item" onclick="showScreen('profile-screen')">
-                <div>Profile</div>
+    </div>
+
+    <div id="custom-confirm" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm text-center shadow-xl">
+            <p id="confirm-message" class="mb-6 text-gray-800"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="confirm-cancel-btn" class="btn bg-gray-200 text-gray-800 px-6">বাতিল</button>
+                <button id="confirm-ok-btn" class="btn btn-danger px-6">নিশ্চিত করুন</button>
             </div>
         </div>
     </div>
 
-    <!-- Ad Integration Script -->
-    <script data-project-id="NOTCOINBOT">
-      !function(){
-        var s=document.currentScript,p=s.getAttribute('data-project-id')||'default';
-        var d=['https://ad.gigapub.tech','https://ru-ad.gigapub.tech'],i=0,t,sc;
-        function l(){
-          sc=document.createElement('script');
-          sc.async=true;
-          sc.src=d[i]+'/script?id='+p;
-          clearTimeout(t);
-          t=setTimeout(function(){
-            sc.onload=sc.onerror=null;
-            sc.src='';
-            if(++i<d.length)l();
-          },15000);
-          sc.onload=function(){clearTimeout(t)};
-          sc.onerror=function(){clearTimeout(t);if(++i<d.length)l()};
-          document.head.appendChild(sc);
-        }
-        l();
-      }();
-    </script>
+    <script type="module">
+        // নতুন ফায়ারবেস কনফিগারেশন
+        const firebaseConfig = {
+            apiKey: "AIzaSyASMBf-fL9tJOj2sgKdpVK77TYRMga1bag",
+            authDomain: "money-host-56ee9.firebaseapp.com",
+            databaseURL: "https://money-host-56ee9-default-rtdb.firebaseio.com", // যদিও এটি এখানে ব্যবহার নাও হতে পারে, সম্পূর্ণতা নিশ্চিত করতে যোগ করা হলো।
+            projectId: "money-host-56ee9",
+            storageBucket: "money-host-56ee9.firebasestorage.app",
+            messagingSenderId: "701262930342",
+            appId: "1:701262930342:web:d992e12673ceba55ff2f67"
+        };
+        
+        // নতুন অ্যাডমিন UID
+        const ADMIN_UIDS = ["3jTr4Bc6bAbfBaMgJvBzniJPMWq1"]; 
 
-    <script>
-        // User data with referral tracking
-        let userData = {
-            userId: generateUserId(),
-            balance: 0,
-            dailyTasksCompleted: 0,
-            lifetimeTasksCompleted: 0,
-            hourlyTasksCompleted: 0,
-            totalEarnings: 0,
-            currentStreak: 0,
-            tasksDone: 0,
-            referrals: 0,
-            referralEarnings: 0,
-            lastCheckin: null,
-            lastTaskTime: null,
-            telegramVerified: false,
-            referredBy: getUrlParameter('ref') || null,
-            ataniId: "1021" // Added Atani ID
-        };
-        
-        // Initialize the app
-        function initApp() {
-            // Check if user was referred
-            if (userData.referredBy) {
-                // In a real app, you would send this to your backend
-                console.log(`User was referred by: ${userData.referredBy}`);
-                // Give bonus to referrer (this would happen on backend)
-            }
-            
-            // Set referral link with user's ID
-            document.getElementById('user-ref-id').textContent = userData.userId;
-            
-            // Load saved data from localStorage
-            loadUserData();
-            
-            updateBalances();
-            updateStats();
-            
-            // Check if user can check in today
-            const today = new Date().toDateString();
-            if (userData.lastCheckin !== today) {
-                document.getElementById('checkin-btn').textContent = 'Claim Daily Reward';
-                document.getElementById('checkin-btn').disabled = false;
-            }
-            
-            // Check if user can complete tasks
-            checkTaskAvailability();
-        }
-        
-        // Generate a unique user ID
-        function generateUserId() {
-            return 'USER' + Math.floor(100000 + Math.random() * 900000);
-        }
-        
-        // Get URL parameters
-        function getUrlParameter(name) {
-            name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(window.location.href);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
-        }
-        
-        // Load user data from localStorage
-        function loadUserData() {
-            const savedData = localStorage.getItem('notCoinUserData');
-            if (savedData) {
-                Object.assign(userData, JSON.parse(savedData));
-            }
-        }
-        
-        // Save user data to localStorage
-        function saveUserData() {
-            localStorage.setItem('notCoinUserData', JSON.stringify(userData));
-        }
-        
-        // Show different screens
-        function showScreen(screenId) {
-            // Hide all screens
-            document.querySelectorAll('.container > div').forEach(div => {
-                div.style.display = 'none';
-            });
-            
-            // Show the selected screen
-            document.getElementById(screenId).style.display = 'block';
-            
-            // Update nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Update active nav item
-            if (screenId === 'home-screen') {
-                document.querySelectorAll('.nav-item')[0].classList.add('active');
-            } else if (screenId === 'ads-screen') {
-                document.querySelectorAll('.nav-item')[1].classList.add('active');
-                updateTaskCounts();
-            } else if (screenId === 'tg-screen') {
-                document.querySelectorAll('.nav-item')[2].classList.add('active');
-            } else if (screenId === 'refer-screen') {
-                document.querySelectorAll('.nav-item')[3].classList.add('active');
-                document.getElementById('ref-earnings').textContent = userData.referralEarnings;
-            } else if (screenId === 'withdraw-screen') {
-                document.querySelectorAll('.nav-item')[4].classList.add('active');
-            } else if (screenId === 'profile-screen') {
-                document.querySelectorAll('.nav-item')[5].classList.add('active');
-                updateStats();
-            }
-            
-            // Update all balances
-            updateBalances();
-        }
-        
-        // Update all balance displays
-        function updateBalances() {
-            document.querySelectorAll('.balance-amount').forEach(el => {
-                el.textContent = userData.balance + ' NOT';
-            });
-        }
-        
-        // Update profile statistics
-        function updateStats() {
-            document.getElementById('total-earned').textContent = userData.totalEarnings;
-            document.getElementById('current-streak').textContent = userData.currentStreak;
-            document.getElementById('tasks-done').textContent = userData.tasksDone;
-            document.getElementById('referrals-count').textContent = userData.referrals;
-        }
-        
-        // Update task counts
-        function updateTaskCounts() {
-            document.getElementById('daily-tasks').textContent = userData.dailyTasksCompleted + '/30';
-            document.getElementById('lifetime-tasks').textContent = userData.lifetimeTasksCompleted;
-            document.getElementById('hourly-tasks').textContent = userData.hourlyTasksCompleted + '/15';
-            document.getElementById('total-earnings').textContent = userData.totalEarnings + ' NOT';
-        }
-        
-        // Check if tasks are available
-        function checkTaskAvailability() {
-            const now = new Date();
-            const taskBtn = document.getElementById('task-btn');
-            
-            // Reset hourly tasks if it's a new hour
-            if (userData.lastTaskTime) {
-                const lastHour = new Date(userData.lastTaskTime).getHours();
-                const currentHour = now.getHours();
-                if (currentHour !== lastHour) {
-                    userData.hourlyTasksCompleted = 0;
-                    saveUserData();
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, query, where, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const loginView = document.getElementById('admin-login-view');
+        const dashboardView = document.getElementById('admin-dashboard');
+
+        window.onload = () => {
+            lucide.createIcons();
+            setupEventListeners();
+            onAuthStateChanged(auth, (user) => {
+                if (user && ADMIN_UIDS.includes(user.uid)) {
+                    loginView.style.display = 'none';
+                    dashboardView.style.display = 'block';
+                    navigateTo('dashboard-page');
+                    loadDashboardData();
+                    loadUsers();
+                    loadWithdrawals();
+                    loadSettings();
+                } else {
+                    loginView.style.display = 'flex';
+                    dashboardView.style.display = 'none';
                 }
-            }
-            
-            // Check daily limit
-            if (userData.dailyTasksCompleted >= 30) {
-                taskBtn.disabled = true;
-                taskBtn.textContent = 'Daily Limit Reached';
-                return;
-            }
-            
-            // Check hourly limit
-            if (userData.hourlyTasksCompleted >= 15) {
-                taskBtn.disabled = true;
-                taskBtn.textContent = 'Hourly Limit Reached';
-                return;
-            }
-            
-            // Task is available
-            taskBtn.disabled = false;
-            taskBtn.textContent = 'Watch Ad (+3 NOT)';
-        }
-        
-        // Show ad and reward user
-        function showAdAndReward() {
-            const taskBtn = document.getElementById('task-btn');
-            taskBtn.disabled = true;
-            taskBtn.textContent = 'Loading Ad...';
-            
-            // Show ad from GigaPub
-            window.showGiga()
-                .then(() => {
-                    // Ad completed successfully
-                    completeTask();
-                    taskBtn.textContent = 'Watch Ad (+3 NOT)';
-                })
-                .catch(e => {
-                    // Ad failed - use fallback
-                    console.error('Ad error:', e);
-                    alert('Ad not available right now. Please try again later.');
-                    taskBtn.disabled = false;
-                    taskBtn.textContent = 'Watch Ad (+3 NOT)';
-                });
-        }
-        
-        // Complete a task
-        function completeTask() {
-            userData.balance += 3;
-            userData.totalEarnings += 3;
-            userData.dailyTasksCompleted++;
-            userData.lifetimeTasksCompleted++;
-            userData.hourlyTasksCompleted++;
-            userData.tasksDone++;
-            userData.lastTaskTime = new Date();
-            
-            // If user was referred, give 5% to referrer
-            if (userData.referredBy) {
-                const referrerBonus = 0.15; // 5% of 3 NOT
-                userData.referralEarnings += referrerBonus;
-                // In a real app, you would send this to your backend to credit the referrer
-                console.log(`Credited 0.15 NOT to referrer ${userData.referredBy}`);
-            }
-            
-            updateBalances();
-            updateTaskCounts();
-            updateStats();
-            checkTaskAvailability();
-            saveUserData();
-            
-            // Show completion message
-            alert('Task completed! You earned 3 NOT.');
-        }
-        
-        // Claim daily reward
-        function claimDailyReward() {
-            const today = new Date().toDateString();
-            const reward = 2; // Fixed 2 NOT per day as requested
-            
-            userData.balance += reward;
-            userData.totalEarnings += reward;
-            userData.lastCheckin = today;
-            userData.currentStreak++;
-            
-            updateBalances();
-            updateStats();
-            saveUserData();
-            
-            document.getElementById('checkin-btn').textContent = 'Wait For Next Day';
-            document.getElementById('checkin-btn').disabled = true;
-            
-            alert(`Daily reward claimed! You earned ${reward} NOT.`);
-        }
-        
-        // Verify Telegram join
-        function verifyTelegram() {
-            if (userData.telegramVerified) {
-                alert('You have already verified your Telegram join.');
-                return;
-            }
-            
-            userData.balance += 4;
-            userData.totalEarnings += 4;
-            userData.telegramVerified = true;
-            
-            updateBalances();
-            updateStats();
-            saveUserData();
-            
-            document.getElementById('verify-btn').disabled = true;
-            document.getElementById('verify-btn').textContent = 'Already Verified';
-            
-            alert('Telegram join verified! You earned 4 NOT.');
-        }
-        
-        // Request withdrawal
-        function requestWithdrawal() {
-            const amount = parseInt(document.getElementById('withdraw-amount').value);
-            const address = document.getElementById('withdraw-address').value.trim();
-            const isAtani = document.getElementById('atani').checked;
-            
-            if (!amount || isNaN(amount)) {
-                alert('Please enter a valid amount.');
-                return;
-            }
-            
-            if (amount < 150) {
-                alert('Minimum withdrawal amount is 150 NOT.');
-                return;
-            }
-            
-            if (amount > userData.balance) {
-                alert('Insufficient balance.');
-                return;
-            }
-            
-            if (!address) {
-                alert('Please enter a valid withdrawal address.');
-                return;
-            }
-            
-            // Prepare withdrawal message
-            let message = `New withdrawal request:\nAmount: ${amount} NOT\n`;
-            message += `Payment Method: ${isAtani ? 'Atani (ID: 1021)' : 'Binance'}\n`;
-            message += `Address: ${address}\nUser ID: ${userData.userId}`;
-            
-            // This would be an actual API call to your backend in production
-            console.log('Withdrawal request:', message);
-            console.log('This would be sent to @shap642 in a real implementation');
-            
-            // In a real implementation, you would send this to your Telegram bot
-            // For example: sendToTelegram(message);
-            
-            userData.balance -= amount;
-            updateBalances();
-            saveUserData();
-            
-            alert(`Withdrawal request for ${amount} NOT has been submitted. Processing may take 24-48 hours.`);
-            
-            // Reset form
-            document.getElementById('withdraw-amount').value = '';
-            document.getElementById('withdraw-address').value = '';
-        }
-        
-        // Share functions
-        function shareTelegram() {
-            const link = document.getElementById('referral-link').textContent.trim();
-            window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}`, '_blank');
-        }
-        
-        function shareWhatsApp() {
-            const link = document.getElementById('referral-link').textContent.trim();
-            window.open(`https://wa.me/?text=${encodeURIComponent(`Join Not Coin Tasks and earn with me: ${link}`)}`, '_blank');
-        }
-        
-        function shareTwitter() {
-            const link = document.getElementById('referral-link').textContent.trim();
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Join Not Coin Tasks and earn with me: ${link}`)}`, '_blank');
-        }
-        
-        // Logout
-        function logout() {
-            if (confirm('Are you sure you want to log out?')) {
-                alert('You have been logged out. This is a demo, so no actual logout occurs.');
-            }
-        }
-        
-        // Event listeners
-        document.getElementById('checkin-btn').addEventListener('click', function() {
-            if (this.textContent === 'Claim Daily Reward') {
-                claimDailyReward();
-            }
-        });
-        
-        // Initialize the app when loaded
-        window.onload = initApp;
-        
-        // Ad fallback mechanism
-        window.AdGigaFallback = function() {
-            return new Promise((resolve) => {
-                // Simple fallback - just resolve after a short delay
-                setTimeout(resolve, 1000);
             });
         };
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.page === pageId) link.classList.add('active');
+            });
+        }
+
+        function setupEventListeners() {
+            document.getElementById('admin-login-btn').addEventListener('click', handleAdminLogin);
+            document.getElementById('admin-logout-btn').addEventListener('click', () => signOut(auth));
+            document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+            document.getElementById('send-notification-btn').addEventListener('click', sendNotification);
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', (e) => { e.preventDefault(); navigateTo(link.dataset.page); });
+            });
+        }
+
+        async function handleAdminLogin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                if (!ADMIN_UIDS.includes(userCredential.user.uid)) {
+                    await signOut(auth);
+                    showAlert("আপনি এই প্যানেল অ্যাক্সেস করার জন্য অনুমোদিত নন।");
+                }
+            } catch (error) { showAlert(error.message); }
+        }
+
+        function loadDashboardData() {
+            onSnapshot(collection(db, "users"), snap => { document.getElementById('total-users').textContent = snap.size; });
+            onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "pending")), snap => { document.getElementById('pending-withdrawals').textContent = snap.size; });
+        }
+
+        function loadUsers() {
+            const usersTableBody = document.getElementById('users-table-body');
+            onSnapshot(collection(db, "users"), (snapshot) => {
+                usersTableBody.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const user = doc.data();
+                    const isBlocked = user.isBlocked || false;
+                    const row = `<tr>
+                        <td>${user.name || 'N/A'}</td><td>${user.email}</td><td>${user.balance || 0}</td>
+                        <td><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${isBlocked ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">${isBlocked ? 'ব্লক করা' : 'সক্রিয়'}</span></td>
+                        <td><button class="btn text-xs ${isBlocked ? 'btn-success' : 'btn-danger'}" onclick="window.toggleBlockUser('${doc.id}', ${isBlocked})">${isBlocked ? 'আনব্লক' : 'ব্লক'}</button></td>
+                    </tr>`;
+                    usersTableBody.innerHTML += row;
+                });
+            });
+        }
+
+        function loadWithdrawals() {
+            const withdrawalsTableBody = document.getElementById('withdrawals-table-body');
+            onSnapshot(query(collection(db, "withdrawals"), where("status", "==", "pending")), (snapshot) => {
+                withdrawalsTableBody.innerHTML = '';
+                snapshot.forEach(docSnap => {
+                    const request = docSnap.data();
+                    const requestedDate = request.requestedAt?.toDate().toLocaleString() || 'N/A';
+                    const row = `<tr>
+                        <td>${request.userName || 'N/A'}</td><td>${request.amount}</td><td>${request.method}</td>
+                        <td>${request.paymentDetail || 'N/A'}</td><td>${requestedDate}</td>
+                        <td class="space-x-2">
+                            <button class="btn btn-success text-xs" onclick="window.handleWithdrawal('${docSnap.id}', 'approved')">অনুমোদন</button>
+                            <button class="btn btn-danger text-xs" onclick="window.handleWithdrawal('${docSnap.id}', 'rejected')">প্রত্যাখ্যান</button>
+                        </td>
+                    </tr>`;
+                    withdrawalsTableBody.innerHTML += row;
+                });
+            });
+        }
+
+        async function loadSettings() {
+            const configRef = doc(db, "config", "main");
+            const docSnap = await getDoc(configRef);
+            if (docSnap.exists()) {
+                const config = docSnap.data();
+                document.getElementById('min-withdrawal').value = config.minWithdrawal || '';
+                document.getElementById('daily-ad-limit').value = config.dailyAdLimit || '';
+                document.getElementById('coin-value-coins').value = config.coinValueCoins || '';
+                document.getElementById('coin-value-bdt').value = config.coinValueBDT || '';
+                document.getElementById('payment-methods').value = (config.paymentMethods || []).join(',');
+            }
+        }
+
+        window.toggleBlockUser = (userId, isBlocked) => {
+            const action = isBlocked ? 'আনব্লক' : 'ব্লক';
+            showConfirm(`আপনি কি নিশ্চিত এই ব্যবহারকারীকে ${action} করতে চান?`, async () => {
+                const userRef = doc(db, "users", userId);
+                try {
+                    await updateDoc(userRef, { isBlocked: !isBlocked });
+                    showAlert(`ব্যবহারকারী সফলভাবে ${action} করা হয়েছে।`);
+                } catch (error) { showAlert(`ত্রুটি: ${error.message}`); }
+            });
+        };
+
+        window.handleWithdrawal = (requestId, newStatus) => {
+            const statusText = newStatus === 'approved' ? 'অনুমোদন' : 'প্রত্যাখ্যান';
+            showConfirm(`আপনি কি নিশ্চিত এই অনুরোধটি ${statusText} করতে চান?`, async () => {
+                const requestRef = doc(db, "withdrawals", requestId);
+                try {
+                    if (newStatus === 'rejected') {
+                        const requestSnap = await getDoc(requestRef);
+                        if (requestSnap.exists()) {
+                            const requestData = requestSnap.data();
+                            const userRef = doc(db, "users", requestData.userId);
+                            const userSnap = await getDoc(userRef);
+                            if(userSnap.exists()){
+                               const currentBalance = userSnap.data().balance || 0;
+                               await updateDoc(userRef, { balance: currentBalance + requestData.amount });
+                            }
+                        }
+                    }
+                    await updateDoc(requestRef, { status: newStatus });
+                    showAlert(`অনুরোধটি ${statusText} করা হয়েছে।`);
+                } catch (error) { showAlert(`ত্রুটি: ${error.message}`); }
+            });
+        };
+
+        async function sendNotification() {
+            const title = document.getElementById('notification-title').value;
+            const message = document.getElementById('notification-message').value;
+            if (!title || !message) return showAlert("শিরোনাম এবং বার্তা উভয়ই প্রয়োজনীয়।");
+            try {
+                await addDoc(collection(db, "notifications"), { title, message, createdAt: serverTimestamp() });
+                showAlert("নোটিফিকেশন সমস্ত ব্যবহারকারীর কাছে পাঠানো হয়েছে!");
+                document.getElementById('notification-title').value = '';
+                document.getElementById('notification-message').value = '';
+            } catch (error) { showAlert(`ত্রুটি: ${error.message}`); }
+        }
+
+        async function saveSettings() {
+            const minWithdrawal = parseInt(document.getElementById('min-withdrawal').value);
+            const dailyAdLimit = parseInt(document.getElementById('daily-ad-limit').value);
+            const coinValueCoins = parseInt(document.getElementById('coin-value-coins').value);
+            const coinValueBDT = parseInt(document.getElementById('coin-value-bdt').value);
+            const paymentMethods = document.getElementById('payment-methods').value.split(',').map(s => s.trim()).filter(Boolean);
+            if (isNaN(minWithdrawal) || isNaN(dailyAdLimit) || isNaN(coinValueCoins) || isNaN(coinValueBDT)) return showAlert("দয়া করে সমস্ত সংখ্যা ফিল্ডে বৈধ সংখ্যা লিখুন।");
+            try {
+                await setDoc(doc(db, "config", "main"), { minWithdrawal, dailyAdLimit, coinValueCoins, coinValueBDT, paymentMethods }, { merge: true });
+                showAlert("সেটিংস সফলভাবে সংরক্ষণ করা হয়েছে!");
+            } catch (error) { showAlert(`সেটিংস সংরক্ষণ করতে ত্রুটি: ${error.message}`); }
+        }
         
-        if (window.showGiga === undefined) {
-            window.showGiga = () => window.AdGigaFallback();
+        function showAlert(message) {
+            document.getElementById('alert-message').textContent = message;
+            document.getElementById('custom-alert').classList.remove('hidden');
+            document.getElementById('alert-ok-btn').onclick = () => { document.getElementById('custom-alert').classList.add('hidden'); };
+        }
+
+        function showConfirm(message, onConfirm) {
+            const confirmModal = document.getElementById('custom-confirm');
+            const confirmMessage = document.getElementById('confirm-message');
+            const confirmOkBtn = document.getElementById('confirm-ok-btn');
+            const confirmCancelBtn = document.getElementById('confirm-cancel-btn');
+
+            confirmMessage.textContent = message;
+            confirmModal.classList.remove('hidden');
+
+            const okListener = () => {
+                onConfirm();
+                confirmModal.classList.add('hidden');
+                confirmOkBtn.removeEventListener('click', okListener);
+                confirmCancelBtn.removeEventListener('click', cancelListener);
+            };
+
+            const cancelListener = () => {
+                confirmModal.classList.add('hidden');
+                confirmOkBtn.removeEventListener('click', okListener);
+                confirmCancelBtn.removeEventListener('click', cancelListener);
+            };
+
+            confirmOkBtn.addEventListener('click', okListener);
+            confirmCancelBtn.addEventListener('click', cancelListener);
         }
     </script>
 </body>
