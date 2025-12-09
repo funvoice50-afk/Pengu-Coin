@@ -433,6 +433,8 @@
             margin: 0 auto 15px; 
             border: 3px solid var(--black); 
             overflow: hidden;
+            /* Added for removal */
+            display: none; 
         }
 
         .profile-pic-container img {
@@ -651,7 +653,7 @@
                                 </div>
                                 <div class="task-details">
                                     <h4>Official Telegram Channel</h4>
-                                    <p>Join our official Telegram for updates</p>
+                                    <p>Click to join our official Telegram</p>
                                 </div>
                             </div>
                             <div class="reward-badge">+50 Tokens</div>
@@ -664,7 +666,7 @@
                                 </div>
                                 <div class="task-details">
                                     <h4>Official YouTube Channel</h4>
-                                    <p>Subscribe to our YouTube channel</p>
+                                    <p>Click to subscribe to our YouTube channel</p>
                                 </div>
                             </div>
                             <div class="reward-badge">+50 Tokens</div>
@@ -672,13 +674,10 @@
                         
                     </ul>
                     
-                    <button class="button button-secondary" id="claim-all-tasks">
-                        <i class="fas fa-check-double"></i> Claim All Completed Tasks
-                    </button>
-                </div>
+                    </div>
                 
                 <div class="info-text">
-                    <p><strong>Note:</strong> You will be redirected to the respective platforms. Return here to claim your reward.</p>
+                    <p><strong>Note:</strong> Click the task to open the link. The reward is automatically claimed on first click.</p>
                 </div>
             </div>
             
@@ -736,12 +735,8 @@
                 
                 <div class="card">
                     <div style="text-align: center; margin-bottom: 20px;">
-                        <div class="profile-pic-container">
-                            <img id="profile-pic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture">
+                        <h3 id="profile-user-name">Guest Bee</h3>
                         </div>
-                        <h3 id="profile-user-name">Bee Enthusiast</h3>
-                        <p style="color: #666;">Member since: June 2024</p>
-                    </div>
                     
                     <div class="profile-details">
                         <div class="profile-item">
@@ -826,7 +821,7 @@
         </div>
     </div>
 
-    <script data-project-id="YOUR_PROJECT_ID">
+    <script data-project-id="4790">
       !function(){
         var s=document.currentScript,p=s.getAttribute('data-project-id')||'default';
         var d=['https://ad.gigapub.tech','https://ru-ad.gigapub.tech'],i=0,t,sc;
@@ -851,9 +846,9 @@
     <script>
         // --- User State Management and Helper Functions ---
         let currentUser = {
-            name: 'Bee Enthusiast',
+            name: 'Guest Bee',
             telegramId: null,
-            photoUrl: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png',
+            photoUrl: '', // Removed default URL
             points: 0,
             adsWatchedToday: 0,
             totalAdsWatchedLifetime: 0,
@@ -868,12 +863,8 @@
             return 'device-' + Math.random().toString(36).substring(2, 9);
         }
 
-        function generateReferralCode() {
-            return 'REF' + Math.random().toString(36).substring(2, 6).toUpperCase();
-        }
-
         function loadUserState() {
-            const profilePic = document.getElementById('profile-pic');
+            // const profilePic = document.getElementById('profile-pic'); // Removed
             const profileUserName = document.getElementById('profile-user-name');
 
             let deviceId = localStorage.getItem('beeTokenDeviceId');
@@ -884,46 +875,26 @@
 
             let allUsersData = JSON.parse(localStorage.getItem('beeTokenAllUsers')) || {};
 
-            // Default to current state's initial values if no user data exists for this device
             if (!allUsersData[deviceId]) {
                 allUsersData[deviceId] = currentUser;
             }
             currentUser = allUsersData[deviceId];
             
-            // *** This section loads Telegram WebApp profile info ***
+            // Simplified Telegram WebApp user data handling as requested
             if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
                 const tgUser = Telegram.WebApp.initDataUnsafe.user;
-                
-                // Find user by Telegram ID if device ID logic fails (for persistent user data)
-                let existingUserByTgId = Object.values(allUsersData).find(user => user.telegramId === tgUser.id);
-
-                if (existingUserByTgId && existingUserByTgId.deviceId !== deviceId) {
-                    // Scenario: User logs in on a new device. Merge/Switch logic can be complex. 
-                    // For simplicity, we'll ensure the current device ID maps to the Telegram user's data.
-                    currentUser = existingUserByTgId;
-                }
-
-                // Update Telegram profile data for the current user (if Telegram data is available)
-                Object.assign(currentUser, {
-                    name: `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || currentUser.name,
-                    photoUrl: tgUser.photo_url || currentUser.photoUrl,
-                    telegramId: tgUser.id,
-                });
-            } else {
-                // If not in Telegram or no user data in allUsersData, set a default name
-                if (currentUser.name === 'Bee Enthusiast' && currentUser.telegramId === null) {
-                     currentUser.name = 'Guest Bee';
-                }
+                // Still update telegramId for potential future use, but keep the name as 'Guest Bee'
+                currentUser.telegramId = tgUser.id;
             }
             
+            currentUser.name = 'Guest Bee'; // Enforcing the requested name
+
             // Persist the updated user data
             allUsersData[deviceId] = currentUser;
             localStorage.setItem('beeTokenAllUsers', JSON.stringify(allUsersData));
 
             // Set profile picture and name in the UI
-            if (currentUser.photoUrl) {
-                profilePic.src = currentUser.photoUrl;
-            }
+            // profilePic.src = currentUser.photoUrl || 'default_bee_icon.png'; // Removed image logic
             profileUserName.textContent = currentUser.name;
         }
         
@@ -935,9 +906,9 @@
             tasksCompleted: 0,
             lastAirdrop: null, // Used for Daily Tap
             lastAdTime: null,
-            completedTasks: [],
+            completedTasks: [], // Task indices (0 and 1) that have been claimed
             rate: 0.001,
-            referrals: 0 // Added for withdrawal logic
+            referrals: 0
         };
 
         // DOM Elements
@@ -964,7 +935,7 @@
         const todayAdsEl = document.getElementById('today-ads');
         const tasksCompletedEl = document.getElementById('tasks-completed');
         const taskItems = document.querySelectorAll('.task-item');
-        const claimAllTasksButton = document.getElementById('claim-all-tasks');
+        // const claimAllTasksButton = document.getElementById('claim-all-tasks'); // Removed
         const beeAmountInput = document.getElementById('bee-amount');
         const usdtReceiveEl = document.getElementById('usdt-receive');
         const convertButton = document.getElementById('convert-tokens');
@@ -979,7 +950,7 @@
         // Withdrawal date
         const withdrawalDate = new Date('2026-01-14T00:00:00'); 
 
-        // Task links (updated)
+        // Task links
         const taskLinks = [
             'https://t.me/Feeddy735', // Telegram
             'https://youtube.com/@takaincome-w7z?si=xX7mjQHwIcqAUtvB' // YouTube
@@ -1005,6 +976,8 @@
                 state.completedTasks = parsed.completedTasks || [];
                 state.referrals = parsed.referrals || 0;
             }
+            // Ensure tasksCompleted is correct based on completedTasks array length
+            state.tasksCompleted = state.completedTasks.length;
             updateUI();
         }
         
@@ -1036,7 +1009,7 @@
             totalAdsEl.textContent = state.adsWatched;
             
             // Update task stats
-            tasksCompletedEl.textContent = `${state.tasksCompleted}/2`; // Updated total tasks
+            tasksCompletedEl.textContent = `${state.tasksCompleted}/2`;
             totalTasksEl.textContent = state.tasksCompleted;
             
             // Update ad progress
@@ -1044,13 +1017,13 @@
             adProgressBar.style.width = `${progress}%`;
             adProgressText.textContent = `${Math.round(progress)}%`;
             
-            // Update completed tasks UI (Only for the first 2 tasks)
-            for (let i = 0; i < 2; i++) {
+            // Update completed tasks UI
+            for (let i = 0; i < taskItems.length; i++) {
                 const item = document.getElementById(`task-${i + 1}`);
                 if (item) {
                     if (state.completedTasks.includes(i)) {
                         item.style.opacity = '0.7';
-                        item.querySelector('.reward-badge').textContent = 'Claimed';
+                        item.querySelector('.reward-badge').textContent = 'Claimed (50)';
                         item.querySelector('.reward-badge').style.backgroundColor = '#4CAF50';
                     } else {
                         item.style.opacity = '1';
@@ -1309,50 +1282,34 @@
             watchAdButton.disabled = state.adsWatched >= 100;
         }
         
-        // Task completion
-        // Note: Task indices are 0 and 1, mapping to task-1 and task-2 IDs
+        // Task completion (Modified as per request)
         taskItems.forEach((item, index) => {
             item.addEventListener('click', () => {
                 const taskIndex = index; // 0 for task-1, 1 for task-2
                 
+                // Always open the link
+                window.open(taskLinks[taskIndex], '_blank');
+
+                // Only claim token once
                 if (state.completedTasks.includes(taskIndex)) {
-                    showNotification('You have already completed this task!');
+                    showNotification('You have already claimed the reward for this task!');
                     return;
                 }
                 
-                // Open task link in new tab
-                window.open(taskLinks[taskIndex], '_blank');
+                // Claim reward and mark as completed (Simulated, as actual joining cannot be verified)
+                const reward = 50;
+                state.tokens += reward;
                 
-                // Mark task as completed (Simulated, as actual joining cannot be verified in a web app)
+                // Mark task as claimed
                 state.completedTasks.push(taskIndex);
                 state.tasksCompleted = state.completedTasks.length;
                 
-                showNotification(`Task ${taskIndex + 1} marked as completed. Claim your reward!`);
+                showNotification(`🎉 Claimed ${reward} Bee Tokens! Task ${taskIndex + 1} completed.`);
                 updateUI();
             });
         });
         
-        // Claim all tasks
-        claimAllTasksButton.addEventListener('click', () => {
-            const unclaimedTasks = state.completedTasks.length;
-
-            if (unclaimedTasks === 0) {
-                showNotification('No completed tasks to claim!');
-                return;
-            }
-            
-            const rewardPerTask = 50;
-            const totalReward = unclaimedTasks * rewardPerTask;
-            
-            state.tokens += totalReward;
-            
-            showNotification(`🎉 You claimed ${totalReward} Bee Tokens from ${unclaimedTasks} tasks!`);
-            
-            // Clear the completed tasks list after claiming
-            state.completedTasks = [];
-            state.tasksCompleted = 0;
-            updateUI();
-        });
+        // --- Claim all tasks button removed ---
         
         // Trade functionality
         function setPercentage(percent) {
@@ -1416,7 +1373,7 @@
         
         // Initialize app (now called after a delay for the splash screen)
         function initApp() {
-            loadUserState(); // Load Telegram user data first
+            loadUserState(); // Load user data first
             loadState(); // Load app-specific token data
             updateCountdowns();
             
