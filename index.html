@@ -907,7 +907,7 @@
                                 <div class="task-details">
                                     <h4>Official Telegram Channel</h4>
                                     <p id="telegram-link-text">Click to join our official Telegram</p>
-                                </div>
+                                }
                             </div>
                             <div class="reward-badge">+50 Tokens</div>
                         </li>
@@ -1408,7 +1408,7 @@
                     userData = defaultUserData;
                     
                     // --- NEW REDIRECT LOGIC FOR NEW USER ---
-                    localStorage.setItem('needsBotRedirect', 'true');
+                    localStorage.setItem('pendingReferralCode', 'none'); // Use a placeholder if no ref code, to trigger modal
                     // ---------------------------------------
                     
                     // Check for referral code in URL
@@ -1416,9 +1416,21 @@
                     const refCode = urlParams.get('ref');
                     
                     if (refCode) {
-                        await applyReferralBonus(refCode);
+                        localStorage.setItem('pendingReferralCode', refCode);
                     }
                 }
+                
+                // Process pending referral *after* initial user data load
+                const pendingRefCode = localStorage.getItem('pendingReferralCode');
+                if (pendingRefCode && pendingRefCode !== 'none' && !userData.referredBy) {
+                    await applyReferralBonus(pendingRefCode);
+                    localStorage.removeItem('pendingReferralCode');
+                } else if(pendingRefCode === 'none') {
+                    // If no ref code but it was a new user, force modal redirect
+                    localStorage.removeItem('pendingReferralCode');
+                    localStorage.setItem('needsBotRedirect', 'true');
+                }
+
             } catch (error) {
                 console.error("Error fetching user data:", error);
                 showNotification("Error loading user data.");
@@ -1473,19 +1485,22 @@
                     const referrerRef = doc(db, "users", referrerDoc.id);
                     const referrerData = referrerDoc.data();
                     
-                    // Reward for referrer: 50 coins (as requested)
+                    // Reward for referrer: 50 coins
                     const referrerReward = 50; 
                     
                     // Update referrer's data
                     const newReferredUsers = [...(referrerData.referredUsers || []), currentUser.uid];
                     await updateDoc(referrerRef, {
                         referredUsers: newReferredUsers,
-                        referralEarnings: (referrerData.referralEarnings || 0) + referrerReward
+                        referralEarnings: (referrerData.referralEarnings || 0) + referrerReward,
+                        // --- FIX START: Add referral reward to the main token balance ---
+                        balance: (referrerData.balance || 0) + referrerReward
+                        // --- FIX END ---
                     });
                     
                     // Update current user's data
                     const userRef = doc(db, "users", currentUser.uid);
-                    // Giving the new user a 100 coin bonus (kept from original code)
+                    // Giving the new user a 100 coin bonus
                     const newUserBonus = 100; 
                     await updateDoc(userRef, {
                         referredBy: referrerCode,
@@ -1789,6 +1804,8 @@
                 // Store referral code to apply after user creation
                 if (referralCode) {
                     localStorage.setItem('pendingReferralCode', referralCode);
+                } else {
+                     localStorage.setItem('pendingReferralCode', 'none');
                 }
                 
                 showNotification("Account created successfully!");
@@ -1818,6 +1835,10 @@
                     const hours = Math.floor(remainingHours);
                     const minutes = Math.floor((remainingHours - hours) * 60);
                     const seconds = Math.floor(((remainingHours - hours) * 60 - minutes) * 60);
+                    
+                    airdropCountdownEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    airdropButton.disabled = true;
+                    airdropButton.innerHTML = '<i class="fas fa-clock"></i> Tap Cooldown';
                     
                     showNotification(`Come back in ${hours}h ${minutes}m ${seconds}s to tap again!`);
                     return;
