@@ -546,6 +546,38 @@
             text-decoration: underline;
             cursor: pointer;
         }
+
+        /* Withdrawal form styles */
+        .withdrawal-form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .withdrawal-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .withdrawal-form-group select,
+        .withdrawal-form-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid var(--black);
+            font-size: 16px;
+            background-color: var(--gray);
+        }
+
+        .withdrawal-result {
+            padding: 10px;
+            background-color: var(--secondary-yellow);
+            border-radius: 10px;
+            border: 2px solid var(--black);
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+        }
         
         @media (max-width: 500px) {
             .app-container {
@@ -636,7 +668,6 @@
     </style>
 </head>
 <body>
-    <!-- Authentication Container -->
     <div id="auth-container" class="auth-container">
         <div class="auth-box">
             <h2 style="margin-bottom: 20px; color: var(--black);">🐝 Bee Token Authentication</h2>
@@ -686,7 +717,6 @@
         </div>
         
         <div class="content-area">
-            <!-- Home Page -->
             <div class="page active" id="home-page">
                 <div class="stats-bar">
                     <div class="stat-item">
@@ -701,7 +731,6 @@
                 
                 <h2 class="section-title"><i class="fas fa-home"></i> Home</h2>
                 
-                <!-- Referral Section -->
                 <div class="referral-section">
                     <h3>Invite Friends & Earn More!</h3>
                     <p>Share your referral link and earn 10% of their earnings!</p>
@@ -747,7 +776,6 @@
                 </div>
             </div>
             
-            <!-- Earn Page -->
             <div class="page" id="earn-page">
                 <h2 class="section-title"><i class="fas fa-coins"></i> Earn Tokens</h2>
                 
@@ -786,7 +814,6 @@
                 </div>
             </div>
             
-            <!-- Task Page -->
             <div class="page" id="task-page">
                 <h2 class="section-title"><i class="fas fa-tasks"></i> Complete Tasks</h2>
                 
@@ -830,7 +857,6 @@
                 </div>
             </div>
             
-            <!-- Trade Page -->
             <div class="page" id="trade-page">
                 <h2 class="section-title"><i class="fas fa-exchange-alt"></i> Trade Tokens</h2>
                 
@@ -880,7 +906,6 @@
                 </div>
             </div>
             
-            <!-- Profile Page -->
             <div class="page" id="profile-page">
                 <h2 class="section-title"><i class="fas fa-user"></i> Profile</h2>
                 
@@ -934,19 +959,41 @@
                 
                 <div class="card">
                     <h3 style="margin-bottom: 15px; text-align: center;">Withdraw Funds</h3>
-                    <p style="text-align: center; margin-bottom: 10px;">Withdraw your USDT to your wallet</p>
                     
                     <div class="info-text" style="color: var(--red); font-weight: bold;">
-                        <p>Minimum 20 Referrals Required for Withdrawal.</p>
-                        <p style="margin-top: 5px;">Withdrawal opens on January 14, 2026.</p>
+                        <p>Minimum Withdrawal: 10 USDT</p>
                     </div>
 
-                    <button class="button button-primary" id="withdraw-button" disabled>
-                        <i class="fas fa-wallet"></i> Withdraw USDT
+                    <div class="withdrawal-form-group">
+                        <label for="withdrawal-amount">USDT Amount (Min. 10):</label>
+                        <input type="number" id="withdrawal-amount" min="10" step="0.01" value="10" required>
+                    </div>
+
+                    <div class="withdrawal-form-group">
+                        <label for="withdrawal-method">Withdrawal Method:</label>
+                        <select id="withdrawal-method">
+                            <option value="Binance">Binance (USDT)</option>
+                            <option value="bKash">bKash (BDT)</option>
+                            <option value="Nagad">Nagad (BDT)</option>
+                            <option value="PayPal">PayPal (INR)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="withdrawal-form-group">
+                        <label for="account-details">Account Number/ID:</label>
+                        <input type="text" id="account-details" placeholder="Enter your account details" required>
+                    </div>
+
+                    <div class="withdrawal-result">
+                        You will receive: <span id="receive-amount">10.00 USDT</span>
+                    </div>
+
+                    <button class="button button-primary" id="withdraw-button">
+                        <i class="fas fa-wallet"></i> Submit Withdrawal Request
                     </button>
                     
                     <div class="info-text" style="margin-top: 15px;">
-                        <p><span class="coming-soon">Withdrawal Status</span> Currently restricted.</p>
+                        <p>Processing time: 24-48 hours.</p>
                     </div>
                 </div>
             </div>
@@ -980,7 +1027,6 @@
         </div>
     </div>
 
-    <!-- Firebase Imports -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -1008,6 +1054,14 @@
         let userData = null;
         let appConfig = {};
         let botConfig = {};
+
+        // --- NEW EXCHANGE RATES & MINIMUM WITHDRAWAL ---
+        const MIN_WITHDRAWAL_USDT = 10;
+        const EXCHANGE_RATES = {
+            BDT: 125, // 1 USDT = 125 BDT
+            INR: 90   // 1 USDT = 90 INR
+        };
+        // ----------------------------------------------
         
         // Task links (will be loaded from Firebase)
         let taskLinks = {
@@ -1084,9 +1138,16 @@
         const profileReferralsEl = document.getElementById('profile-referrals');
         const telegramLinkText = document.getElementById('telegram-link-text');
         const youtubeLinkText = document.getElementById('youtube-link-text');
+
+        // --- NEW WITHDRAWAL DOM ELEMENTS ---
+        const withdrawalAmountInput = document.getElementById('withdrawal-amount');
+        const withdrawalMethodSelect = document.getElementById('withdrawal-method');
+        const accountDetailsInput = document.getElementById('account-details');
+        const receiveAmountEl = document.getElementById('receive-amount');
+        // -----------------------------------
         
-        // Withdrawal date
-        const withdrawalDate = new Date('2026-01-14T00:00:00');
+        // Withdrawal date (Removed lock time check as requested)
+        // const withdrawalDate = new Date('2026-01-14T00:00:00'); 
         
         // Percentage buttons for trade
         document.getElementById('btn-25').addEventListener('click', () => setPercentage(25));
@@ -1096,6 +1157,11 @@
         
         // Authentication state change handler
         onAuthStateChanged(auth, handleAuthStateChange);
+
+        // --- NEW WITHDRAWAL LOGIC LISTENERS ---
+        withdrawalAmountInput.addEventListener('input', updateReceiveAmountDisplay);
+        withdrawalMethodSelect.addEventListener('change', updateReceiveAmountDisplay);
+        // --------------------------------------
         
         async function handleAuthStateChange(user) {
             if (user) {
@@ -1213,7 +1279,7 @@
             try {
                 const configSnap = await getDoc(configRef);
                 appConfig = configSnap.exists() ? configSnap.data() : { 
-                    minWithdrawal: 20, // Minimum referrals for withdrawal
+                    minWithdrawal: 20, // Keep default, but use local constant for enforcement
                     dailyAdLimit: 100,
                     coinValueCoins: 1000,
                     coinValueUsdt: 1
@@ -1255,24 +1321,29 @@
                     const referrerRef = doc(db, "users", referrerDoc.id);
                     const referrerData = referrerDoc.data();
                     
+                    // Reward for referrer: 50 coins (as requested)
+                    const referrerReward = 50; 
+                    
                     // Update referrer's data
                     const newReferredUsers = [...(referrerData.referredUsers || []), currentUser.uid];
                     await updateDoc(referrerRef, {
                         referredUsers: newReferredUsers,
-                        referralEarnings: (referrerData.referralEarnings || 0) + 50
+                        referralEarnings: (referrerData.referralEarnings || 0) + referrerReward
                     });
                     
                     // Update current user's data
                     const userRef = doc(db, "users", currentUser.uid);
+                    // Giving the new user a 100 coin bonus (kept from original code)
+                    const newUserBonus = 100; 
                     await updateDoc(userRef, {
                         referredBy: referrerCode,
-                        balance: (userData.balance || 0) + 100
+                        balance: (userData.balance || 0) + newUserBonus
                     });
                     
                     // Update local state
                     userData.referredBy = referrerCode;
-                    userData.balance += 100;
-                    state.tokens += 100;
+                    userData.balance += newUserBonus;
+                    state.tokens += newUserBonus;
                     
                     showNotification("🎉 Referral bonus applied! You received 100 Bee Tokens.");
                     updateUI();
@@ -1336,16 +1407,10 @@
             
             // Update USDT receive amount
             updateUsdtReceive();
-            
-            // Check withdrawal conditions
-            const now = new Date();
-            if (referrals >= (appConfig.minWithdrawal || 20) && now >= withdrawalDate) {
-                withdrawButton.disabled = false;
-                withdrawButton.innerHTML = '<i class="fas fa-wallet"></i> Withdraw USDT';
-            } else {
-                withdrawButton.disabled = true;
-                withdrawButton.innerHTML = '<i class="fas fa-lock"></i> Withdrawal Locked';
-            }
+
+            // Update withdrawal form
+            withdrawalAmountInput.setAttribute('max', state.usdt.toFixed(2));
+            updateReceiveAmountDisplay();
         }
         
         function updateUsdtReceive() {
@@ -1354,6 +1419,40 @@
             usdtReceiveEl.textContent = usdtAmount.toFixed(4) + ' USDT';
         }
         
+        function updateReceiveAmountDisplay() {
+            let usdtAmount = parseFloat(withdrawalAmountInput.value) || 0;
+            const method = withdrawalMethodSelect.value;
+            let displayText = '';
+
+            // Enforce minimum withdrawal on display
+            if (usdtAmount < MIN_WITHDRAWAL_USDT) {
+                receiveAmountEl.textContent = `Min. ${MIN_WITHDRAWAL_USDT} USDT required.`;
+                receiveAmountEl.style.color = 'var(--red)';
+                return;
+            } else {
+                receiveAmountEl.style.color = 'var(--black)';
+            }
+
+            switch (method) {
+                case 'Binance':
+                    displayText = `${usdtAmount.toFixed(2)} USDT`;
+                    break;
+                case 'bKash':
+                case 'Nagad':
+                    const bdtAmount = usdtAmount * EXCHANGE_RATES.BDT;
+                    displayText = `${bdtAmount.toFixed(2)} BDT (1 USDT = ${EXCHANGE_RATES.BDT} BDT)`;
+                    break;
+                case 'PayPal':
+                    const inrAmount = usdtAmount * EXCHANGE_RATES.INR;
+                    displayText = `${inrAmount.toFixed(2)} INR (1 USDT = ${EXCHANGE_RATES.INR} INR)`;
+                    break;
+                default:
+                    displayText = `${usdtAmount.toFixed(2)} USDT`;
+            }
+
+            receiveAmountEl.textContent = displayText;
+        }
+
         function setPercentage(percent) {
             const amount = Math.floor((state.tokens * percent) / 100);
             beeAmountInput.value = amount;
@@ -1793,37 +1892,66 @@
         withdrawButton.addEventListener('click', async () => {
             if (!currentUser) return;
             
-            const now = new Date();
-            if (now < withdrawalDate) {
-                showNotification(`Withdrawal opens on January 14, 2026. Come back then!`, 4000);
+            const usdtAmount = parseFloat(withdrawalAmountInput.value);
+            const method = withdrawalMethodSelect.value;
+            const accountDetails = accountDetailsInput.value.trim();
+
+            if (usdtAmount < MIN_WITHDRAWAL_USDT) {
+                showNotification(`Minimum withdrawal is ${MIN_WITHDRAWAL_USDT} USDT.`);
+                return;
+            }
+
+            if (usdtAmount > state.usdt) {
+                showNotification('Insufficient USDT balance for this withdrawal.');
+                return;
+            }
+
+            if (!accountDetails) {
+                showNotification('Please enter your account number/ID for the selected method.');
                 return;
             }
             
-            const referrals = userData.referredUsers?.length || 0;
-            if (referrals < (appConfig.minWithdrawal || 20)) {
-                showNotification(`You need at least ${appConfig.minWithdrawal || 20} referrals to withdraw. You currently have ${referrals}.`, 4000);
-                return;
-            }
+            // Calculate equivalent receive amount for the withdrawal record
+            let receiveValue = usdtAmount.toFixed(2);
+            let receiveCurrency = 'USDT';
             
-            if (state.usdt <= 0) {
-                showNotification('You have no USDT to withdraw.');
-                return;
+            if (method === 'bKash' || method === 'Nagad') {
+                receiveValue = (usdtAmount * EXCHANGE_RATES.BDT).toFixed(2);
+                receiveCurrency = 'BDT';
+            } else if (method === 'PayPal') {
+                receiveValue = (usdtAmount * EXCHANGE_RATES.INR).toFixed(2);
+                receiveCurrency = 'INR';
             }
-            
+
             // Create withdrawal request
             try {
+                // Deduct USDT first
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, {
+                    usdtBalance: (userData.usdtBalance || 0) - usdtAmount
+                });
+
+                // Update local state
+                userData.usdtBalance -= usdtAmount;
+                state.usdt = userData.usdtBalance;
+                
+                // Add withdrawal request to the 'withdrawals' collection
                 await addDoc(collection(db, "withdrawals"), {
                     userId: currentUser.uid,
                     userName: userData.name,
                     userEmail: userData.email,
-                    amount: state.usdt,
-                    method: "Binance",
-                    paymentDetail: "",
+                    usdtAmount: usdtAmount,
+                    method: method,
+                    accountDetail: accountDetails,
+                    receiveValue: receiveValue,
+                    receiveCurrency: receiveCurrency,
                     status: "pending",
                     requestedAt: serverTimestamp()
                 });
+
+                updateUI(); // Reflect the deducted balance immediately
                 
-                showNotification('Withdrawal request submitted successfully! It will be processed within 24-48 hours.', 4000);
+                showNotification(`✅ Withdrawal request submitted successfully! Amount: ${usdtAmount.toFixed(2)} USDT via ${method}.`, 4000);
             } catch (error) {
                 showNotification('Error submitting withdrawal request: ' + error.message);
             }
@@ -1913,9 +2041,9 @@
         window.updateUsdtReceive = updateUsdtReceive;
         window.setPercentage = setPercentage;
         window.showNotification = showNotification;
+        window.updateReceiveAmountDisplay = updateReceiveAmountDisplay; // Export new function
     </script>
 
-    <!-- GIGAPUB Ad Script -->
     <script data-project-id="4790">
       !function(){
         var s=document.currentScript,p=s.getAttribute('data-project-id')||'default';
@@ -1927,15 +2055,4 @@
           clearTimeout(t);
           t=setTimeout(function(){
             sc.onload=sc.onerror=null;
-            sc.src='';
-            if(++i<d.length)l();
-          },15000);
-          sc.onload=function(){clearTimeout(t)};
-          sc.onerror=function(){clearTimeout(t);if(++i<d.length)l()};
-          document.head.appendChild(sc);
-        }
-        l();
-      }();
-    </script>
-</body>
-</html>
+            sc.
