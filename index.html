@@ -448,6 +448,105 @@
             to { transform: translateX(0); opacity: 1; }
         }
         
+        /* Referral Section Styles */
+        .referral-section {
+            background: linear-gradient(135deg, var(--primary-yellow), var(--dark-yellow));
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 3px solid var(--black);
+        }
+        
+        .referral-code {
+            background-color: var(--white);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            border: 3px solid var(--black);
+        }
+        
+        .referral-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        
+        .referral-stat {
+            text-align: center;
+        }
+        
+        .referral-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--black);
+        }
+        
+        .referral-label {
+            font-size: 12px;
+            color: #333;
+        }
+        
+        /* Authentication Styles */
+        .auth-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .auth-box {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 5px solid var(--dark-yellow);
+        }
+        
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border: 3px solid var(--black);
+            font-size: 16px;
+        }
+        
+        .auth-button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background: linear-gradient(to bottom, var(--primary-yellow), var(--dark-yellow));
+            border: 3px solid var(--black);
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .auth-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .auth-link {
+            color: var(--dark-yellow);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
         @media (max-width: 500px) {
             .app-container {
                 border-radius: 0;
@@ -537,6 +636,32 @@
     </style>
 </head>
 <body>
+    <!-- Authentication Container -->
+    <div id="auth-container" class="auth-container">
+        <div class="auth-box">
+            <h2 style="margin-bottom: 20px; color: var(--black);">🐝 Bee Token Authentication</h2>
+            <div id="login-view">
+                <input type="email" id="login-email" class="auth-input" placeholder="Email Address">
+                <input type="password" id="login-password" class="auth-input" placeholder="Password">
+                <button id="login-btn" class="auth-button">Login</button>
+                <div class="auth-links">
+                    <span class="auth-link" id="show-signup">Create Account</span>
+                    <span class="auth-link" id="skip-auth">Skip for now</span>
+                </div>
+            </div>
+            <div id="signup-view" style="display: none;">
+                <input type="text" id="signup-name" class="auth-input" placeholder="Full Name">
+                <input type="email" id="signup-email" class="auth-input" placeholder="Email Address">
+                <input type="password" id="signup-password" class="auth-input" placeholder="Password">
+                <input type="text" id="referral-code-input" class="auth-input" placeholder="Referral Code (Optional)">
+                <button id="signup-btn" class="auth-button">Create Account</button>
+                <div class="auth-links">
+                    <span class="auth-link" id="show-login">Already have account?</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="splash-screen">
         <div class="splash-logo">
             <i class="fas fa-bee"></i>
@@ -548,6 +673,7 @@
         </div>
         <p class="loading-text">Fetching the freshest Honeycomb data...</p>
     </div>
+    
     <div class="app-container" style="display:none;">
         <div class="honeycomb-bg"></div>
         
@@ -560,6 +686,7 @@
         </div>
         
         <div class="content-area">
+            <!-- Home Page -->
             <div class="page active" id="home-page">
                 <div class="stats-bar">
                     <div class="stat-item">
@@ -573,6 +700,26 @@
                 </div>
                 
                 <h2 class="section-title"><i class="fas fa-home"></i> Home</h2>
+                
+                <!-- Referral Section -->
+                <div class="referral-section">
+                    <h3>Invite Friends & Earn More!</h3>
+                    <p>Share your referral link and earn 10% of their earnings!</p>
+                    <div class="referral-code" id="referral-code-display">Loading...</div>
+                    <button class="button" id="copy-referral-btn">
+                        <i class="fas fa-copy"></i> Copy Referral Link
+                    </button>
+                    <div class="referral-stats">
+                        <div class="referral-stat">
+                            <div class="referral-number" id="total-referrals">0</div>
+                            <div class="referral-label">Total Referrals</div>
+                        </div>
+                        <div class="referral-stat">
+                            <div class="referral-number" id="referral-earnings">0</div>
+                            <div class="referral-label">Earned from Referrals</div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="card">
                     <h3 style="margin-bottom: 15px; text-align: center;">👆 Daily Bee Tap 👆</h3>
@@ -600,6 +747,7 @@
                 </div>
             </div>
             
+            <!-- Earn Page -->
             <div class="page" id="earn-page">
                 <h2 class="section-title"><i class="fas fa-coins"></i> Earn Tokens</h2>
                 
@@ -638,6 +786,7 @@
                 </div>
             </div>
             
+            <!-- Task Page -->
             <div class="page" id="task-page">
                 <h2 class="section-title"><i class="fas fa-tasks"></i> Complete Tasks</h2>
                 
@@ -653,7 +802,7 @@
                                 </div>
                                 <div class="task-details">
                                     <h4>Official Telegram Channel</h4>
-                                    <p>Click to join our official Telegram</p>
+                                    <p id="telegram-link-text">Click to join our official Telegram</p>
                                 </div>
                             </div>
                             <div class="reward-badge">+50 Tokens</div>
@@ -666,7 +815,7 @@
                                 </div>
                                 <div class="task-details">
                                     <h4>Official YouTube Channel</h4>
-                                    <p>Click to subscribe to our YouTube channel</p>
+                                    <p id="youtube-link-text">Click to subscribe to our YouTube channel</p>
                                 </div>
                             </div>
                             <div class="reward-badge">+50 Tokens</div>
@@ -681,6 +830,7 @@
                 </div>
             </div>
             
+            <!-- Trade Page -->
             <div class="page" id="trade-page">
                 <h2 class="section-title"><i class="fas fa-exchange-alt"></i> Trade Tokens</h2>
                 
@@ -730,6 +880,7 @@
                 </div>
             </div>
             
+            <!-- Profile Page -->
             <div class="page" id="profile-page">
                 <h2 class="section-title"><i class="fas fa-user"></i> Profile</h2>
                 
@@ -769,6 +920,14 @@
                                 <span>Tasks Completed</span>
                             </div>
                             <div id="total-tasks">0</div>
+                        </div>
+                        
+                        <div class="profile-item">
+                            <div class="profile-label">
+                                <i class="fas fa-users" style="color: var(--primary-yellow);"></i>
+                                <span>Total Referrals</span>
+                            </div>
+                            <div id="profile-referrals">0</div>
                         </div>
                     </div>
                 </div>
@@ -821,99 +980,72 @@
         </div>
     </div>
 
-    <script data-project-id="4790">
-      !function(){
-        var s=document.currentScript,p=s.getAttribute('data-project-id')||'default';
-        var d=['https://ad.gigapub.tech','https://ru-ad.gigapub.tech'],i=0,t,sc;
-        function l(){
-          sc=document.createElement('script');
-          sc.async=true;
-          sc.src=d[i]+'/script?id='+p;
-          clearTimeout(t);
-          t=setTimeout(function(){
-            sc.onload=sc.onerror=null;
-            sc.src='';
-            if(++i<d.length)l();
-          },15000);
-          sc.onload=function(){clearTimeout(t)};
-          sc.onerror=function(){clearTimeout(t);if(++i<d.length)l()};
-          document.head.appendChild(sc);
-        }
-        l();
-      }();
-    </script>
-
-    <script>
-        // --- User State Management and Helper Functions ---
-        let currentUser = {
-            name: 'Guest Bee',
-            telegramId: null,
-            photoUrl: '', // Removed default URL
-            points: 0,
-            adsWatchedToday: 0,
-            totalAdsWatchedLifetime: 0,
-            lastAdWatchDate: null,
-            claimedBonuses: [],
-            referralCode: 'BEE2024',
-            referredBy: null,
-            referredUsers: []
-        };
-
-        function generateDeviceId() {
-            return 'device-' + Math.random().toString(36).substring(2, 9);
-        }
-
-        function loadUserState() {
-            // const profilePic = document.getElementById('profile-pic'); // Removed
-            const profileUserName = document.getElementById('profile-user-name');
-
-            let deviceId = localStorage.getItem('beeTokenDeviceId');
-            if (!deviceId) {
-                deviceId = generateDeviceId();
-                localStorage.setItem('beeTokenDeviceId', deviceId);
-            }
-
-            let allUsersData = JSON.parse(localStorage.getItem('beeTokenAllUsers')) || {};
-
-            if (!allUsersData[deviceId]) {
-                allUsersData[deviceId] = currentUser;
-            }
-            currentUser = allUsersData[deviceId];
-            
-            // Simplified Telegram WebApp user data handling as requested
-            if (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
-                const tgUser = Telegram.WebApp.initDataUnsafe.user;
-                // Still update telegramId for potential future use, but keep the name as 'Guest Bee'
-                currentUser.telegramId = tgUser.id;
-            }
-            
-            currentUser.name = 'Guest Bee'; // Enforcing the requested name
-
-            // Persist the updated user data
-            allUsersData[deviceId] = currentUser;
-            localStorage.setItem('beeTokenAllUsers', JSON.stringify(allUsersData));
-
-            // Set profile picture and name in the UI
-            // profilePic.src = currentUser.photoUrl || 'default_bee_icon.png'; // Removed image logic
-            profileUserName.textContent = currentUser.name;
-        }
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, serverTimestamp, query, where, getDocs, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         
-        // --- App State (simplified for in-app logic, separate from Telegram user data) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyASMBf-fL9tJOj2sgKdpVK77TYRMga1bag",
+            authDomain: "money-host-56ee9.firebaseapp.com",
+            databaseURL: "https://money-host-56ee9-default-rtdb.firebaseio.com",
+            projectId: "money-host-56ee9",
+            storageBucket: "money-host-56ee9.firebasestorage.app",
+            messagingSenderId: "701262930342",
+            appId: "1:701262930342:web:a8c49ea25b730332ff2f67"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Admin user ID
+        const ADMIN_USER_ID = "3jTr4Bc6bAbfBaMgJvBzniJPMWq1";
+        
+        // Global variables
+        let currentUser = null;
+        let userData = null;
+        let appConfig = {};
+        let botConfig = {};
+        
+        // Task links (will be loaded from Firebase)
+        let taskLinks = {
+            telegram: "https://t.me/Feeddy735",
+            youtube: "https://youtube.com/@takaincome-w7z?si=xX7mjQHwIcqAUtvB"
+        };
+        
+        // App state
         const state = {
             tokens: 0,
             usdt: 0,
             adsWatched: 0,
             tasksCompleted: 0,
-            lastAirdrop: null, // Used for Daily Tap
+            lastAirdrop: null,
             lastAdTime: null,
-            completedTasks: [], // Task indices (0 and 1) that have been claimed
-            rate: 0.001,
-            referrals: 0
+            completedTasks: [],
+            referrals: 0,
+            referralEarnings: 0
         };
-
+        
         // DOM Elements
         const appContainer = document.querySelector('.app-container');
         const splashScreen = document.getElementById('splash-screen');
+        const authContainer = document.getElementById('auth-container');
+        const loginView = document.getElementById('login-view');
+        const signupView = document.getElementById('signup-view');
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const loginBtn = document.getElementById('login-btn');
+        const signupName = document.getElementById('signup-name');
+        const signupEmail = document.getElementById('signup-email');
+        const signupPassword = document.getElementById('signup-password');
+        const signupBtn = document.getElementById('signup-btn');
+        const showSignup = document.getElementById('show-signup');
+        const showLogin = document.getElementById('show-login');
+        const skipAuth = document.getElementById('skip-auth');
+        const referralCodeInput = document.getElementById('referral-code-input');
+        
         const pages = {
             home: document.getElementById('home-page'),
             earn: document.getElementById('earn-page'),
@@ -935,7 +1067,6 @@
         const todayAdsEl = document.getElementById('today-ads');
         const tasksCompletedEl = document.getElementById('tasks-completed');
         const taskItems = document.querySelectorAll('.task-item');
-        // const claimAllTasksButton = document.getElementById('claim-all-tasks'); // Removed
         const beeAmountInput = document.getElementById('bee-amount');
         const usdtReceiveEl = document.getElementById('usdt-receive');
         const convertButton = document.getElementById('convert-tokens');
@@ -946,74 +1077,241 @@
         const withdrawButton = document.getElementById('withdraw-button');
         const notification = document.getElementById('notification');
         const notificationMessage = document.getElementById('notification-message');
+        const referralCodeDisplay = document.getElementById('referral-code-display');
+        const copyReferralBtn = document.getElementById('copy-referral-btn');
+        const totalReferralsEl = document.getElementById('total-referrals');
+        const referralEarningsEl = document.getElementById('referral-earnings');
+        const profileReferralsEl = document.getElementById('profile-referrals');
+        const telegramLinkText = document.getElementById('telegram-link-text');
+        const youtubeLinkText = document.getElementById('youtube-link-text');
         
         // Withdrawal date
-        const withdrawalDate = new Date('2026-01-14T00:00:00'); 
-
-        // Task links
-        const taskLinks = [
-            'https://t.me/Feeddy735', // Telegram
-            'https://youtube.com/@takaincome-w7z?si=xX7mjQHwIcqAUtvB' // YouTube
-        ];
-
+        const withdrawalDate = new Date('2026-01-14T00:00:00');
+        
         // Percentage buttons for trade
         document.getElementById('btn-25').addEventListener('click', () => setPercentage(25));
         document.getElementById('btn-50').addEventListener('click', () => setPercentage(50));
         document.getElementById('btn-75').addEventListener('click', () => setPercentage(75));
         document.getElementById('btn-100').addEventListener('click', () => setPercentage(100));
         
-        // Initialize from localStorage
-        function loadState() {
-            const savedState = localStorage.getItem('beeAppState');
-            if (savedState) {
-                const parsed = JSON.parse(savedState);
-                state.tokens = parsed.tokens || 0;
-                state.usdt = parsed.usdt || 0;
-                state.adsWatched = parsed.adsWatched || 0;
-                state.tasksCompleted = parsed.tasksCompleted || 0;
-                state.lastAirdrop = parsed.lastAirdrop ? new Date(parsed.lastAirdrop) : null;
-                state.lastAdTime = parsed.lastAdTime ? new Date(parsed.lastAdTime) : null;
-                state.completedTasks = parsed.completedTasks || [];
-                state.referrals = parsed.referrals || 0;
+        // Authentication state change handler
+        onAuthStateChanged(auth, handleAuthStateChange);
+        
+        async function handleAuthStateChange(user) {
+            if (user) {
+                currentUser = user;
+                await fetchUserData();
+                await fetchAppConfig();
+                await fetchBotConfig();
+                
+                // Update task links from bot config
+                if (botConfig.telegramLink) {
+                    taskLinks.telegram = botConfig.telegramLink;
+                    telegramLinkText.textContent = `Click to join: ${botConfig.telegramLink.substring(0, 30)}...`;
+                }
+                if (botConfig.youtubeLink) {
+                    taskLinks.youtube = botConfig.youtubeLink;
+                    youtubeLinkText.textContent = `Click to subscribe: ${botConfig.youtubeLink.substring(0, 30)}...`;
+                }
+                
+                if (userData.isBlocked) {
+                    showNotification("Your account has been blocked.");
+                    await signOut(auth);
+                    return;
+                }
+                
+                updateUI();
+                authContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+                
+                // Setup real-time listeners
+                setupRealtimeListeners();
+            } else {
+                currentUser = null;
+                userData = null;
+                authContainer.style.display = 'flex';
+                appContainer.style.display = 'none';
             }
-            // Ensure tasksCompleted is correct based on completedTasks array length
-            state.tasksCompleted = state.completedTasks.length;
-            updateUI();
         }
         
-        // Save state to localStorage
-        function saveState() {
-            localStorage.setItem('beeAppState', JSON.stringify({
-                tokens: state.tokens,
-                usdt: state.usdt,
-                adsWatched: state.adsWatched,
-                tasksCompleted: state.tasksCompleted,
-                lastAirdrop: state.lastAirdrop,
-                lastAdTime: state.lastAdTime,
-                completedTasks: state.completedTasks,
-                referrals: state.referrals
-            }));
+        async function fetchUserData() {
+            if (!currentUser) return;
+            
+            const userRef = doc(db, "users", currentUser.uid);
+            try {
+                const userSnap = await getDoc(userRef);
+                
+                if (userSnap.exists()) {
+                    userData = userSnap.data();
+                    
+                    // Check if daily reset is needed
+                    const today = new Date().toISOString().split('T')[0];
+                    if (userData.lastAdWatchDate !== today) {
+                        await updateDoc(userRef, {
+                            dailyAdCount: 0,
+                            lastAdWatchDate: today
+                        });
+                        userData.dailyAdCount = 0;
+                        userData.lastAdWatchDate = today;
+                    }
+                    
+                    // Load state from user data
+                    state.tokens = userData.balance || 0;
+                    state.usdt = userData.usdtBalance || 0;
+                    state.adsWatched = userData.totalAdsWatched || 0;
+                    state.tasksCompleted = userData.completedTasks?.length || 0;
+                    state.completedTasks = userData.completedTasks || [];
+                    state.referrals = userData.referredUsers?.length || 0;
+                    state.referralEarnings = userData.referralEarnings || 0;
+                    
+                    // Convert timestamps
+                    state.lastAirdrop = userData.lastAirdrop ? userData.lastAirdrop.toDate() : null;
+                    state.lastAdTime = userData.lastAdTime ? userData.lastAdTime.toDate() : null;
+                    
+                } else {
+                    // Create new user
+                    const ownReferralCode = generateReferralCode();
+                    const defaultUserData = {
+                        uid: currentUser.uid,
+                        name: currentUser.displayName || currentUser.email.split('@')[0],
+                        email: currentUser.email,
+                        balance: 0,
+                        usdtBalance: 0,
+                        referralCode: ownReferralCode,
+                        referredBy: null,
+                        referredUsers: [],
+                        referralEarnings: 0,
+                        totalAdsWatched: 0,
+                        dailyAdCount: 0,
+                        lastAdWatchDate: new Date().toISOString().split('T')[0],
+                        completedTasks: [],
+                        lastAirdrop: null,
+                        lastAdTime: null,
+                        isBlocked: false,
+                        createdAt: serverTimestamp()
+                    };
+                    
+                    await setDoc(userRef, defaultUserData);
+                    userData = defaultUserData;
+                    
+                    // Check for referral code in URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const refCode = urlParams.get('ref');
+                    
+                    if (refCode) {
+                        await applyReferralBonus(refCode);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                showNotification("Error loading user data.");
+            }
         }
         
-        // Update UI
+        async function fetchAppConfig() {
+            const configRef = doc(db, "config", "main");
+            try {
+                const configSnap = await getDoc(configRef);
+                appConfig = configSnap.exists() ? configSnap.data() : { 
+                    minWithdrawal: 20, // Minimum referrals for withdrawal
+                    dailyAdLimit: 100,
+                    coinValueCoins: 1000,
+                    coinValueUsdt: 1
+                };
+            } catch (error) {
+                console.error("Error fetching app config:", error);
+            }
+        }
+        
+        async function fetchBotConfig() {
+            const configRef = doc(db, "config", "bot");
+            try {
+                const configSnap = await getDoc(configRef);
+                botConfig = configSnap.exists() ? configSnap.data() : { 
+                    telegramLink: taskLinks.telegram,
+                    youtubeLink: taskLinks.youtube,
+                    botToken: "",
+                    botUsername: ""
+                };
+            } catch (error) {
+                console.error("Error fetching bot config:", error);
+            }
+        }
+        
+        function generateReferralCode() {
+            return Math.random().toString(36).substring(2, 8).toUpperCase();
+        }
+        
+        async function applyReferralBonus(referrerCode) {
+            if (!currentUser || userData.referredBy) return;
+            
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, where("referralCode", "==", referrerCode));
+            
+            try {
+                const querySnapshot = await getDocs(q);
+                if (!querySnapshot.empty) {
+                    const referrerDoc = querySnapshot.docs[0];
+                    const referrerRef = doc(db, "users", referrerDoc.id);
+                    const referrerData = referrerDoc.data();
+                    
+                    // Update referrer's data
+                    const newReferredUsers = [...(referrerData.referredUsers || []), currentUser.uid];
+                    await updateDoc(referrerRef, {
+                        referredUsers: newReferredUsers,
+                        referralEarnings: (referrerData.referralEarnings || 0) + 50
+                    });
+                    
+                    // Update current user's data
+                    const userRef = doc(db, "users", currentUser.uid);
+                    await updateDoc(userRef, {
+                        referredBy: referrerCode,
+                        balance: (userData.balance || 0) + 100
+                    });
+                    
+                    // Update local state
+                    userData.referredBy = referrerCode;
+                    userData.balance += 100;
+                    state.tokens += 100;
+                    
+                    showNotification("🎉 Referral bonus applied! You received 100 Bee Tokens.");
+                    updateUI();
+                }
+            } catch(error) {
+                console.error("Error applying referral bonus: ", error);
+            }
+        }
+        
         function updateUI() {
+            if (!userData) return;
+            
             // Update token and USDT values
             tokenCountEl.textContent = state.tokens;
-            usdtValueEl.textContent = `$${(state.usdt + state.tokens * state.rate).toFixed(4)}`;
+            const totalValue = state.usdt + (state.tokens * 0.001);
+            usdtValueEl.textContent = `$${totalValue.toFixed(4)}`;
             profileBeeEl.textContent = state.tokens;
             profileUsdtEl.textContent = `$${state.usdt.toFixed(4)}`;
             
             // Update ad stats
-            adsWatchedEl.textContent = state.adsWatched;
-            todayAdsEl.textContent = `${state.adsWatched}/100`;
+            const dailyAds = userData.dailyAdCount || 0;
+            adsWatchedEl.textContent = dailyAds;
+            todayAdsEl.textContent = `${dailyAds}/${appConfig.dailyAdLimit || 100}`;
             totalAdsEl.textContent = state.adsWatched;
             
             // Update task stats
             tasksCompletedEl.textContent = `${state.tasksCompleted}/2`;
             totalTasksEl.textContent = state.tasksCompleted;
             
+            // Update referral stats
+            const referrals = userData.referredUsers?.length || 0;
+            const referralEarnings = userData.referralEarnings || 0;
+            totalReferralsEl.textContent = referrals;
+            referralEarningsEl.textContent = referralEarnings;
+            profileReferralsEl.textContent = referrals;
+            referralCodeDisplay.textContent = userData.referralCode || "BEE2024";
+            
             // Update ad progress
-            const progress = Math.min((state.adsWatched / 100) * 100, 100);
+            const progress = Math.min((dailyAds / (appConfig.dailyAdLimit || 100)) * 100, 100);
             adProgressBar.style.width = `${progress}%`;
             adProgressText.textContent = `${Math.round(progress)}%`;
             
@@ -1038,21 +1336,30 @@
             
             // Update USDT receive amount
             updateUsdtReceive();
-
+            
             // Check withdrawal conditions
             const now = new Date();
-            if (state.referrals >= 20 && now >= withdrawalDate) {
+            if (referrals >= (appConfig.minWithdrawal || 20) && now >= withdrawalDate) {
                 withdrawButton.disabled = false;
                 withdrawButton.innerHTML = '<i class="fas fa-wallet"></i> Withdraw USDT';
             } else {
                 withdrawButton.disabled = true;
                 withdrawButton.innerHTML = '<i class="fas fa-lock"></i> Withdrawal Locked';
             }
-            
-            saveState();
         }
         
-        // Show notification
+        function updateUsdtReceive() {
+            const beeAmount = parseInt(beeAmountInput.value) || 0;
+            const usdtAmount = beeAmount * 0.001;
+            usdtReceiveEl.textContent = usdtAmount.toFixed(4) + ' USDT';
+        }
+        
+        function setPercentage(percent) {
+            const amount = Math.floor((state.tokens * percent) / 100);
+            beeAmountInput.value = amount;
+            updateUsdtReceive();
+        }
+        
         function showNotification(message, duration = 3000) {
             notificationMessage.textContent = message;
             notification.style.display = 'block';
@@ -1060,6 +1367,47 @@
             setTimeout(() => {
                 notification.style.display = 'none';
             }, duration);
+        }
+        
+        function setupRealtimeListeners() {
+            if (!currentUser) return;
+            
+            // Listen for user data changes
+            const userRef = doc(db, "users", currentUser.uid);
+            onSnapshot(userRef, (doc) => {
+                if (doc.exists()) {
+                    userData = doc.data();
+                    
+                    // Update state from new data
+                    state.tokens = userData.balance || 0;
+                    state.usdt = userData.usdtBalance || 0;
+                    state.adsWatched = userData.totalAdsWatched || 0;
+                    state.tasksCompleted = userData.completedTasks?.length || 0;
+                    state.completedTasks = userData.completedTasks || [];
+                    state.referrals = userData.referredUsers?.length || 0;
+                    state.referralEarnings = userData.referralEarnings || 0;
+                    
+                    updateUI();
+                }
+            });
+            
+            // Listen for bot config changes
+            const botConfigRef = doc(db, "config", "bot");
+            onSnapshot(botConfigRef, (doc) => {
+                if (doc.exists()) {
+                    botConfig = doc.data();
+                    
+                    // Update task links
+                    if (botConfig.telegramLink) {
+                        taskLinks.telegram = botConfig.telegramLink;
+                        telegramLinkText.textContent = `Click to join: ${botConfig.telegramLink.substring(0, 30)}...`;
+                    }
+                    if (botConfig.youtubeLink) {
+                        taskLinks.youtube = botConfig.youtubeLink;
+                        youtubeLinkText.textContent = `Click to subscribe: ${botConfig.youtubeLink.substring(0, 30)}...`;
+                    }
+                }
+            });
         }
         
         // Navigation
@@ -1077,13 +1425,80 @@
             });
         });
         
+        // Authentication event listeners
+        showSignup.addEventListener('click', () => {
+            loginView.style.display = 'none';
+            signupView.style.display = 'block';
+        });
+        
+        showLogin.addEventListener('click', () => {
+            signupView.style.display = 'none';
+            loginView.style.display = 'block';
+        });
+        
+        skipAuth.addEventListener('click', () => {
+            // Create anonymous account
+            const tempEmail = `guest_${Date.now()}@beetoken.com`;
+            const tempPassword = `guest_${Math.random().toString(36).substring(2)}`;
+            
+            createUserWithEmailAndPassword(auth, tempEmail, tempPassword)
+                .catch(error => {
+                    // If user already exists, try login
+                    signInWithEmailAndPassword(auth, tempEmail, tempPassword);
+                });
+        });
+        
+        loginBtn.addEventListener('click', async () => {
+            const email = loginEmail.value;
+            const password = loginPassword.value;
+            
+            if (!email || !password) {
+                showNotification("Please enter email and password.");
+                return;
+            }
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showNotification("Login successful!");
+            } catch (error) {
+                showNotification("Login failed: " + error.message);
+            }
+        });
+        
+        signupBtn.addEventListener('click', async () => {
+            const name = signupName.value;
+            const email = signupEmail.value;
+            const password = signupPassword.value;
+            const referralCode = referralCodeInput.value.trim().toUpperCase();
+            
+            if (!name || !email || !password) {
+                showNotification("Please fill all required fields.");
+                return;
+            }
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Store referral code to apply after user creation
+                if (referralCode) {
+                    localStorage.setItem('pendingReferralCode', referralCode);
+                }
+                
+                showNotification("Account created successfully!");
+            } catch (error) {
+                showNotification("Signup failed: " + error.message);
+            }
+        });
+        
         // Daily Tap functionality
-        airdropButton.addEventListener('click', () => {
+        airdropButton.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
             const now = new Date();
             
             // Check if 24 hours have passed since last tap
-            if (state.lastAirdrop) {
-                const timeDiff = now - state.lastAirdrop;
+            if (userData.lastAirdrop) {
+                const timeDiff = now - userData.lastAirdrop.toDate();
                 const hoursDiff = timeDiff / (1000 * 60 * 60);
                 
                 if (hoursDiff < 24) {
@@ -1097,64 +1512,54 @@
                 }
             }
             
-            // Claim airdrop (Daily Tap)
+            // Claim airdrop
             const reward = 50;
-            state.tokens += reward;
-            state.lastAirdrop = now;
-            showNotification(`🎉 You tapped and claimed ${reward} Bee Tokens!`);
-            updateUI();
+            const userRef = doc(db, "users", currentUser.uid);
+            
+            try {
+                await updateDoc(userRef, {
+                    balance: (userData.balance || 0) + reward,
+                    lastAirdrop: serverTimestamp()
+                });
+                
+                // Update local state
+                userData.balance = (userData.balance || 0) + reward;
+                state.tokens += reward;
+                userData.lastAirdrop = now;
+                
+                showNotification(`🎉 You tapped and claimed ${reward} Bee Tokens!`);
+                updateUI();
+            } catch (error) {
+                showNotification("Error claiming airdrop: " + error.message);
+            }
         });
         
-        // Update daily tap countdown
-        function updateAirdropCountdown() {
-            if (state.lastAirdrop) {
-                const now = new Date();
-                const timeDiff = now - state.lastAirdrop;
-                const hoursDiff = timeDiff / (1000 * 60 * 60);
-                
-                if (hoursDiff < 24) {
-                    const remainingHours = 24 - hoursDiff;
-                    const hours = Math.floor(remainingHours);
-                    const minutes = Math.floor((remainingHours - hours) * 60);
-                    const seconds = Math.floor(((remainingHours - hours) * 60 - minutes) * 60);
-                    
-                    airdropCountdownEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                    
-                    // Disable button if cooldown active
-                    airdropButton.disabled = true;
-                    airdropButton.innerHTML = '<i class="fas fa-clock"></i> Tap Cooldown';
-                    return;
-                }
-            }
-            
-            airdropCountdownEl.textContent = '24:00:00';
-            airdropButton.disabled = false;
-            airdropButton.innerHTML = '<i class="fas fa-hand-point-up"></i> Tap for 50 Bee Tokens';
-        }
-        
         // Watch ad functionality
-        watchAdButton.addEventListener('click', () => {
+        watchAdButton.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
             // Check daily limit
-            if (state.adsWatched >= 100) {
-                showNotification('You have reached the daily limit of 100 ads. Come back tomorrow!');
+            const dailyAds = userData.dailyAdCount || 0;
+            if (dailyAds >= (appConfig.dailyAdLimit || 100)) {
+                showNotification('You have reached the daily limit of ads. Come back tomorrow!');
                 return;
             }
             
             // Check hourly limit (50 per hour)
             const now = new Date();
-            if (state.lastAdTime) {
-                const timeDiff = now - state.lastAdTime;
+            if (userData.lastAdTime) {
+                const timeDiff = now - userData.lastAdTime.toDate();
                 const minutesDiff = timeDiff / (1000 * 60);
                 
                 // If less than an hour has passed and user watched 50 ads in that hour
-                if (minutesDiff < 60 && state.adsWatched % 50 === 0 && state.adsWatched > 0) {
+                if (minutesDiff < 60 && dailyAds % 50 === 0 && dailyAds > 0) {
                     const remainingMinutes = 60 - minutesDiff;
                     showNotification(`Hourly limit reached. Wait ${Math.ceil(remainingMinutes)} minutes before watching more ads.`);
                     return;
                 }
             }
             
-            // DOM element for Ad Display info (updated to be simpler)
+            // DOM element for Ad Display
             const currentAdDisplay = document.getElementById('current-ad');
             
             // --- GIGAPUB AD DISPLAY LOGIC START ---
@@ -1163,40 +1568,54 @@
                 watchAdButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad...';
                 
                 window.showGiga()
-                    .then(() => {
+                    .then(async () => {
                         // Reward user on successful ad view/close
                         const reward = 10;
-                        state.tokens += reward;
-                        state.adsWatched++;
-                        state.lastAdTime = new Date();
+                        const userRef = doc(db, "users", currentUser.uid);
                         
-                        // Update ad display (visual feedback for reward)
-                        currentAdDisplay.innerHTML = `
-                            <i class="fas fa-check-circle" style="color: var(--green); font-size: 40px;"></i>
-                            <p style="margin-top: 10px;">Ad completed!</p>
-                            <p style="font-size: 14px; margin-top: 5px; color: var(--green);">+${reward} Bee Tokens</p>
-                        `;
-                        
-                        showNotification(`✅ Ad watched! You earned ${reward} Bee Tokens.`);
-                        updateUI();
-                        
-                        // Reset button after a short delay
-                        setTimeout(() => {
-                            watchAdButton.disabled = false;
-                            watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
+                        try {
+                            await updateDoc(userRef, {
+                                balance: (userData.balance || 0) + reward,
+                                totalAdsWatched: (userData.totalAdsWatched || 0) + 1,
+                                dailyAdCount: (userData.dailyAdCount || 0) + 1,
+                                lastAdTime: serverTimestamp()
+                            });
+                            
+                            // Update local state
+                            userData.balance = (userData.balance || 0) + reward;
+                            userData.totalAdsWatched = (userData.totalAdsWatched || 0) + 1;
+                            userData.dailyAdCount = (userData.dailyAdCount || 0) + 1;
+                            state.tokens += reward;
+                            state.adsWatched = userData.totalAdsWatched;
+                            
+                            // Update ad display
                             currentAdDisplay.innerHTML = `
-                                <i class="fas fa-video" style="font-size: 40px; color: var(--blue);"></i>
-                                <p style="margin-top: 10px;">Ready to watch an ad!</p>
-                                <p id="ad-timer" style="font-size: 12px; margin-top: 5px;"></p>
+                                <i class="fas fa-check-circle" style="color: var(--green); font-size: 40px;"></i>
+                                <p style="margin-top: 10px;">Ad completed!</p>
+                                <p style="font-size: 14px; margin-top: 5px; color: var(--green);">+${reward} Bee Tokens</p>
                             `;
-                        }, 2000);
+                            
+                            showNotification(`✅ Ad watched! You earned ${reward} Bee Tokens.`);
+                            updateUI();
+                            
+                            // Reset button after a short delay
+                            setTimeout(() => {
+                                watchAdButton.disabled = false;
+                                watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
+                                currentAdDisplay.innerHTML = `
+                                    <i class="fas fa-video" style="font-size: 40px; color: var(--blue);"></i>
+                                    <p style="margin-top: 10px;">Ready to watch an ad!</p>
+                                    <p id="ad-timer" style="font-size: 12px; margin-top: 5px;"></p>
+                                `;
+                            }, 2000);
+                        } catch (error) {
+                            showNotification("Error updating balance: " + error.message);
+                        }
                     })
                     .catch(e => {
-                        // Handle errors (ad not ready, user closed early, etc.)
                         console.error('Gigapub Ad Error:', e);
                         showNotification('❌ Ad failed to load or was closed early. Try again.');
                         
-                        // Re-enable button
                         setTimeout(() => {
                             watchAdButton.disabled = false;
                             watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
@@ -1214,7 +1633,7 @@
                 watchAdButton.disabled = true;
                 watchAdButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Simulating Ad...';
                 
-                const countdownInterval = setInterval(() => {
+                const countdownInterval = setInterval(async () => {
                     countdown--;
                     adTimer.textContent = `Simulating reward in ${countdown}s`;
                     
@@ -1223,110 +1642,98 @@
                         
                         // Reward user
                         const reward = 10;
-                        state.tokens += reward;
-                        state.adsWatched++;
-                        state.lastAdTime = now;
+                        const userRef = doc(db, "users", currentUser.uid);
                         
-                        // Update ad display
-                        currentAdDisplay.innerHTML = `
-                            <i class="fas fa-check-circle" style="color: var(--green); font-size: 40px;"></i>
-                            <p style="margin-top: 10px;">Ad completed!</p>
-                            <p style="font-size: 14px; margin-top: 5px; color: var(--green);">+${reward} Bee Tokens</p>
-                        `;
-                        
-                        showNotification(`✅ Ad watched! You earned ${reward} Bee Tokens.`);
-                        updateUI();
-                        
-                        // Reset button after a short delay
-                        setTimeout(() => {
-                            watchAdButton.disabled = false;
-                            watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
+                        try {
+                            await updateDoc(userRef, {
+                                balance: (userData.balance || 0) + reward,
+                                totalAdsWatched: (userData.totalAdsWatched || 0) + 1,
+                                dailyAdCount: (userData.dailyAdCount || 0) + 1,
+                                lastAdTime: serverTimestamp()
+                            });
+                            
+                            // Update local state
+                            userData.balance = (userData.balance || 0) + reward;
+                            userData.totalAdsWatched = (userData.totalAdsWatched || 0) + 1;
+                            userData.dailyAdCount = (userData.dailyAdCount || 0) + 1;
+                            state.tokens += reward;
+                            state.adsWatched = userData.totalAdsWatched;
+                            
+                            // Update ad display
                             currentAdDisplay.innerHTML = `
-                                <i class="fas fa-video" style="font-size: 40px; color: var(--blue);"></i>
-                                <p style="margin-top: 10px;">Ready to watch an ad!</p>
-                                <p id="ad-timer" style="font-size: 12px; margin-top: 5px;"></p>
+                                <i class="fas fa-check-circle" style="color: var(--green); font-size: 40px;"></i>
+                                <p style="margin-top: 10px;">Ad completed!</p>
+                                <p style="font-size: 14px; margin-top: 5px; color: var(--green);">+${reward} Bee Tokens</p>
                             `;
-                        }, 2000);
+                            
+                            showNotification(`✅ Ad watched! You earned ${reward} Bee Tokens.`);
+                            updateUI();
+                            
+                            // Reset button after a short delay
+                            setTimeout(() => {
+                                watchAdButton.disabled = false;
+                                watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
+                                currentAdDisplay.innerHTML = `
+                                    <i class="fas fa-video" style="font-size: 40px; color: var(--blue);"></i>
+                                    <p style="margin-top: 10px;">Ready to watch an ad!</p>
+                                    <p id="ad-timer" style="font-size: 12px; margin-top: 5px;"></p>
+                                `;
+                            }, 2000);
+                        } catch (error) {
+                            showNotification("Error updating balance: " + error.message);
+                        }
                     }
                 }, 1000);
             }
             // --- GIGAPUB AD DISPLAY LOGIC END ---
         });
         
-        // Update ad cooldown
-        function updateAdCountdown() {
-            if (state.lastAdTime && state.adsWatched < 100) {
-                const now = new Date();
-                const timeDiff = now - state.lastAdTime;
-                const secondsDiff = timeDiff / 1000;
-                
-                // 10-second cooldown between ads
-                if (secondsDiff < 10) {
-                    const remainingSeconds = 10 - Math.floor(secondsDiff);
-                    adCountdownEl.textContent = `${remainingSeconds}s`;
-                    watchAdButton.disabled = true;
-                    return;
-                }
-                
-                // Check hourly limit
-                const minutesDiff = timeDiff / (1000 * 60);
-                if (minutesDiff < 60 && state.adsWatched % 50 === 0 && state.adsWatched > 0) {
-                    const remainingMinutes = 60 - minutesDiff;
-                    adCountdownEl.textContent = `${Math.ceil(remainingMinutes)}m`;
-                    watchAdButton.disabled = true;
-                    return;
-                }
-            }
-            
-            adCountdownEl.textContent = '0s';
-            watchAdButton.disabled = state.adsWatched >= 100;
-        }
-        
-        // Task completion (Modified as per request)
+        // Task completion
         taskItems.forEach((item, index) => {
-            item.addEventListener('click', () => {
-                const taskIndex = index; // 0 for task-1, 1 for task-2
+            item.addEventListener('click', async () => {
+                if (!currentUser) return;
+                
+                const taskIndex = index;
                 
                 // Always open the link
-                window.open(taskLinks[taskIndex], '_blank');
-
+                const link = index === 0 ? taskLinks.telegram : taskLinks.youtube;
+                window.open(link, '_blank');
+                
                 // Only claim token once
                 if (state.completedTasks.includes(taskIndex)) {
                     showNotification('You have already claimed the reward for this task!');
                     return;
                 }
                 
-                // Claim reward and mark as completed (Simulated, as actual joining cannot be verified)
+                // Claim reward
                 const reward = 50;
-                state.tokens += reward;
+                const userRef = doc(db, "users", currentUser.uid);
+                const updatedTasks = [...state.completedTasks, taskIndex];
                 
-                // Mark task as claimed
-                state.completedTasks.push(taskIndex);
-                state.tasksCompleted = state.completedTasks.length;
-                
-                showNotification(`🎉 Claimed ${reward} Bee Tokens! Task ${taskIndex + 1} completed.`);
-                updateUI();
+                try {
+                    await updateDoc(userRef, {
+                        balance: (userData.balance || 0) + reward,
+                        completedTasks: updatedTasks
+                    });
+                    
+                    // Update local state
+                    userData.balance = (userData.balance || 0) + reward;
+                    state.tokens += reward;
+                    state.completedTasks = updatedTasks;
+                    state.tasksCompleted = updatedTasks.length;
+                    
+                    showNotification(`🎉 Claimed ${reward} Bee Tokens! Task ${taskIndex + 1} completed.`);
+                    updateUI();
+                } catch (error) {
+                    showNotification("Error claiming task reward: " + error.message);
+                }
             });
         });
         
-        // --- Claim all tasks button removed ---
-        
-        // Trade functionality
-        function setPercentage(percent) {
-            const amount = Math.floor((state.tokens * percent) / 100);
-            beeAmountInput.value = amount;
-            updateUsdtReceive();
-        }
-        
-        function updateUsdtReceive() {
-            const beeAmount = parseInt(beeAmountInput.value) || 0;
-            const usdtAmount = beeAmount * state.rate;
-            usdtReceiveEl.textContent = usdtAmount.toFixed(4) + ' USDT';
-        }
-        
-        beeAmountInput.addEventListener('input', updateUsdtReceive);
-        
-        convertButton.addEventListener('click', () => {
+        // Convert tokens to USDT
+        convertButton.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
             const beeAmount = parseInt(beeAmountInput.value) || 0;
             
             if (beeAmount < 100) {
@@ -1339,60 +1746,196 @@
                 return;
             }
             
-            const usdtAmount = beeAmount * state.rate;
+            const usdtAmount = beeAmount * 0.001;
+            const userRef = doc(db, "users", currentUser.uid);
             
-            state.tokens -= beeAmount;
-            state.usdt += usdtAmount;
+            try {
+                await updateDoc(userRef, {
+                    balance: (userData.balance || 0) - beeAmount,
+                    usdtBalance: (userData.usdtBalance || 0) + usdtAmount
+                });
+                
+                // Update local state
+                userData.balance = (userData.balance || 0) - beeAmount;
+                userData.usdtBalance = (userData.usdtBalance || 0) + usdtAmount;
+                state.tokens = userData.balance;
+                state.usdt = userData.usdtBalance;
+                
+                showNotification(`✅ Converted ${beeAmount} BEE to ${usdtAmount.toFixed(4)} USDT`);
+                beeAmountInput.value = 0;
+                updateUI();
+            } catch (error) {
+                showNotification("Error converting tokens: " + error.message);
+            }
+        });
+        
+        // Copy referral link
+        copyReferralBtn.addEventListener('click', () => {
+            const referralLink = `${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`;
             
-            showNotification(`✅ Converted ${beeAmount} BEE to ${usdtAmount.toFixed(4)} USDT`);
-            beeAmountInput.value = 0;
-            updateUI();
+            navigator.clipboard.writeText(referralLink)
+                .then(() => {
+                    showNotification('Referral link copied to clipboard!');
+                })
+                .catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = referralLink;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification('Referral link copied!');
+                });
         });
         
         // Withdraw functionality
-        withdrawButton.addEventListener('click', () => {
+        withdrawButton.addEventListener('click', async () => {
+            if (!currentUser) return;
+            
             const now = new Date();
             if (now < withdrawalDate) {
-                 showNotification(`Withdrawal opens on January 14, 2026. Come back then!`, 4000);
-                 return;
-            }
-
-            if (state.referrals < 20) {
-                showNotification(`You need at least 20 referrals to withdraw. You currently have ${state.referrals}.`, 4000);
+                showNotification(`Withdrawal opens on January 14, 2026. Come back then!`, 4000);
                 return;
             }
             
-            showNotification('Initiating withdrawal process (simulated).', 4000);
+            const referrals = userData.referredUsers?.length || 0;
+            if (referrals < (appConfig.minWithdrawal || 20)) {
+                showNotification(`You need at least ${appConfig.minWithdrawal || 20} referrals to withdraw. You currently have ${referrals}.`, 4000);
+                return;
+            }
+            
+            if (state.usdt <= 0) {
+                showNotification('You have no USDT to withdraw.');
+                return;
+            }
+            
+            // Create withdrawal request
+            try {
+                await addDoc(collection(db, "withdrawals"), {
+                    userId: currentUser.uid,
+                    userName: userData.name,
+                    userEmail: userData.email,
+                    amount: state.usdt,
+                    method: "Binance",
+                    paymentDetail: "",
+                    status: "pending",
+                    requestedAt: serverTimestamp()
+                });
+                
+                showNotification('Withdrawal request submitted successfully! It will be processed within 24-48 hours.', 4000);
+            } catch (error) {
+                showNotification('Error submitting withdrawal request: ' + error.message);
+            }
         });
         
-        // Initialize countdown timers
+        // Update countdowns
         function updateCountdowns() {
-            updateAirdropCountdown();
-            updateAdCountdown();
+            if (!userData) return;
+            
+            // Daily tap countdown
+            if (userData.lastAirdrop) {
+                const now = new Date();
+                const timeDiff = now - userData.lastAirdrop.toDate();
+                const hoursDiff = timeDiff / (1000 * 60 * 60);
+                
+                if (hoursDiff < 24) {
+                    const remainingHours = 24 - hoursDiff;
+                    const hours = Math.floor(remainingHours);
+                    const minutes = Math.floor((remainingHours - hours) * 60);
+                    const seconds = Math.floor(((remainingHours - hours) * 60 - minutes) * 60);
+                    
+                    airdropCountdownEl.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    airdropButton.disabled = true;
+                    airdropButton.innerHTML = '<i class="fas fa-clock"></i> Tap Cooldown';
+                } else {
+                    airdropCountdownEl.textContent = '24:00:00';
+                    airdropButton.disabled = false;
+                    airdropButton.innerHTML = '<i class="fas fa-hand-point-up"></i> Tap for 50 Bee Tokens';
+                }
+            }
+            
+            // Ad countdown
+            if (userData.lastAdTime) {
+                const now = new Date();
+                const timeDiff = now - userData.lastAdTime.toDate();
+                const secondsDiff = timeDiff / 1000;
+                
+                // 10-second cooldown between ads
+                if (secondsDiff < 10) {
+                    const remainingSeconds = 10 - Math.floor(secondsDiff);
+                    adCountdownEl.textContent = `${remainingSeconds}s`;
+                    watchAdButton.disabled = true;
+                    return;
+                }
+                
+                // Check hourly limit
+                const minutesDiff = timeDiff / (1000 * 60);
+                const dailyAds = userData.dailyAdCount || 0;
+                if (minutesDiff < 60 && dailyAds % 50 === 0 && dailyAds > 0) {
+                    const remainingMinutes = 60 - minutesDiff;
+                    adCountdownEl.textContent = `${Math.ceil(remainingMinutes)}m`;
+                    watchAdButton.disabled = true;
+                    return;
+                }
+            }
+            
+            adCountdownEl.textContent = '0s';
+            watchAdButton.disabled = (userData.dailyAdCount || 0) >= (appConfig.dailyAdLimit || 100);
         }
         
-        // Initialize app (now called after a delay for the splash screen)
+        // Initialize app
         function initApp() {
-            loadUserState(); // Load user data first
-            loadState(); // Load app-specific token data
-            updateCountdowns();
+            // Hide splash screen
+            splashScreen.style.display = 'none';
+            
+            // Check if user is already logged in
+            if (auth.currentUser) {
+                authContainer.style.display = 'none';
+                appContainer.style.display = 'block';
+            } else {
+                authContainer.style.display = 'flex';
+            }
             
             // Update countdowns every second
             setInterval(updateCountdowns, 1000);
-
-            // Hide splash screen and show main app
-            splashScreen.style.display = 'none';
-            appContainer.style.display = 'block';
             
             // Show welcome message
             setTimeout(() => {
                 showNotification('🐝 Welcome to Bee Token! Start earning crypto today!');
-            }, 500); // Short delay after app loads
+            }, 500);
         }
         
         // Start the app with a 5-second delay for the splash screen
         setTimeout(initApp, 5000);
-        // Note: The loading bar animation in CSS is set to 5s to match the timeout.
+        
+        // Make functions available globally
+        window.updateUsdtReceive = updateUsdtReceive;
+        window.setPercentage = setPercentage;
+        window.showNotification = showNotification;
+    </script>
+
+    <!-- GIGAPUB Ad Script -->
+    <script data-project-id="4790">
+      !function(){
+        var s=document.currentScript,p=s.getAttribute('data-project-id')||'default';
+        var d=['https://ad.gigapub.tech','https://ru-ad.gigapub.tech'],i=0,t,sc;
+        function l(){
+          sc=document.createElement('script');
+          sc.async=true;
+          sc.src=d[i]+'/script?id='+p;
+          clearTimeout(t);
+          t=setTimeout(function(){
+            sc.onload=sc.onerror=null;
+            sc.src='';
+            if(++i<d.length)l();
+          },15000);
+          sc.onload=function(){clearTimeout(t)};
+          sc.onerror=function(){clearTimeout(t);if(++i<d.length)l()};
+          document.head.appendChild(sc);
+        }
+        l();
+      }();
     </script>
 </body>
 </html>
