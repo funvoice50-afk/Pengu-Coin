@@ -31,7 +31,7 @@
                               radial-gradient(circle at 80% 20%, var(--secondary-yellow) 0%, transparent 20%),
                               radial-gradient(circle at 40% 40%, #FFF59D 0%, transparent 30%);
             color: var(--black);
-            min-height: 100vh;
+            min-height: 10vh;
             padding-bottom: 80px;
         }
         
@@ -135,7 +135,6 @@
         .stat-label {
             font-size: 12px;
             color: #666;
-            margin-bottom: 5px;
         }
         
         .stat-value {
@@ -268,6 +267,7 @@
             border-radius: 15px;
             margin-bottom: 10px;
             border: 2px solid var(--black);
+            cursor: pointer; /* Added cursor for clickability */
         }
         
         .task-info {
@@ -579,6 +579,16 @@
             margin-top: 10px;
         }
         
+        .withdrawal-warning {
+            background-color: var(--red);
+            color: var(--white);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
         @media (max-width: 500px) {
             .app-container {
                 border-radius: 0;
@@ -770,7 +780,7 @@
                         </div>
                         <div>
                             <div style="font-size: 12px; color: #666;">Tasks Completed</div>
-                            <div style="font-size: 20px; font-weight: bold;" id="tasks-completed">0/2</div>
+                            <div style="font-size: 20px; font-weight: bold;" id="tasks-completed">0/3</div>
                         </div>
                     </div>
                 </div>
@@ -819,7 +829,7 @@
                 
                 <div class="card">
                     <h3 style="margin-bottom: 15px; text-align: center;">Join Channels & Earn</h3>
-                    <p style="text-align: center; margin-bottom: 20px;">Join each channel to earn <strong>50 Bee Tokens</strong> per join.</p>
+                    <p style="text-align: center; margin-bottom: 20px;">Click each task to open the link and claim the reward on first click.</p>
                     
                     <ul class="task-list">
                         <li class="task-item" id="task-1">
@@ -847,13 +857,25 @@
                             </div>
                             <div class="reward-badge">+50 Tokens</div>
                         </li>
-                        
-                    </ul>
+
+                        <li class="task-item" id="task-3">
+                            <div class="task-info">
+                                <div class="task-icon">
+                                    <i class="fab fa-telegram-plane"></i>
+                                </div>
+                                <div class="task-details">
+                                    <h4>Work in Telegram Bot</h4>
+                                    <p id="bot-link-text">Click to start using the Telegram Bot</p>
+                                </div>
+                            </div>
+                            <div class="reward-badge">+200 Tokens</div>
+                        </li>
+                        </ul>
                     
                     </div>
                 
                 <div class="info-text">
-                    <p><strong>Note:</strong> Click the task to open the link. The reward is automatically claimed on first click.</p>
+                    <p><strong>Note:</strong> Rewards are automatically claimed on first click. Total Tasks: <span id="total-available-tasks">3</span></p>
                 </div>
             </div>
             
@@ -960,6 +982,11 @@
                 <div class="card">
                     <h3 style="margin-bottom: 15px; text-align: center;">Withdraw Funds</h3>
                     
+                    <div id="withdrawal-referral-warning" class="withdrawal-warning" style="display: none;">
+                        <p>⚠️ **Withdrawal Lock** ⚠️</p>
+                        <p>You need **15 Referrals** to unlock withdrawals. You currently have: <span id="current-referrals-count">0</span></p>
+                    </div>
+                    
                     <div class="info-text" style="color: var(--red); font-weight: bold;">
                         <p>Minimum Withdrawal: 10 USDT</p>
                     </div>
@@ -1057,16 +1084,18 @@
 
         // --- NEW EXCHANGE RATES & MINIMUM WITHDRAWAL ---
         const MIN_WITHDRAWAL_USDT = 10;
+        const MIN_REFERRALS_FOR_WITHDRAWAL = 15; // New constant
         const EXCHANGE_RATES = {
             BDT: 125, // 1 USDT = 125 BDT
             INR: 90   // 1 USDT = 90 INR
         };
         // ----------------------------------------------
         
-        // Task links (will be loaded from Firebase)
+        // Task links (will be loaded from Firebase, but defaults here are used)
         let taskLinks = {
             telegram: "https://t.me/Feeddy735",
-            youtube: "https://youtube.com/@takaincome-w7z?si=xX7mjQHwIcqAUtvB"
+            youtube: "https://youtube.com/@takaincome-w7z?si=xX7mjQHwIcqAUtvB",
+            telegramBot: "http://t.me/bee_x_token_bot" // New Task Link
         };
         
         // App state
@@ -1079,7 +1108,9 @@
             lastAdTime: null,
             completedTasks: [],
             referrals: 0,
-            referralEarnings: 0
+            referralEarnings: 0,
+            totalAvailableTasks: 3, // Updated to 3
+            taskRewards: [50, 50, 200] // Updated rewards for tasks 1, 2, 3
         };
         
         // DOM Elements
@@ -1138,6 +1169,11 @@
         const profileReferralsEl = document.getElementById('profile-referrals');
         const telegramLinkText = document.getElementById('telegram-link-text');
         const youtubeLinkText = document.getElementById('youtube-link-text');
+        // New Task DOM
+        const botLinkText = document.getElementById('bot-link-text');
+        // Withdrawal Warning DOM
+        const withdrawalReferralWarning = document.getElementById('withdrawal-referral-warning');
+        const currentReferralsCount = document.getElementById('current-referrals-count');
 
         // --- NEW WITHDRAWAL DOM ELEMENTS ---
         const withdrawalAmountInput = document.getElementById('withdrawal-amount');
@@ -1145,9 +1181,6 @@
         const accountDetailsInput = document.getElementById('account-details');
         const receiveAmountEl = document.getElementById('receive-amount');
         // -----------------------------------
-        
-        // Withdrawal date (Removed lock time check as requested)
-        // const withdrawalDate = new Date('2026-01-14T00:00:00'); 
         
         // Percentage buttons for trade
         document.getElementById('btn-25').addEventListener('click', () => setPercentage(25));
@@ -1171,14 +1204,7 @@
                 await fetchBotConfig();
                 
                 // Update task links from bot config
-                if (botConfig.telegramLink) {
-                    taskLinks.telegram = botConfig.telegramLink;
-                    telegramLinkText.textContent = `Click to join: ${botConfig.telegramLink.substring(0, 30)}...`;
-                }
-                if (botConfig.youtubeLink) {
-                    taskLinks.youtube = botConfig.youtubeLink;
-                    youtubeLinkText.textContent = `Click to subscribe: ${botConfig.youtubeLink.substring(0, 30)}...`;
-                }
+                updateTaskLinksUI();
                 
                 if (userData.isBlocked) {
                     showNotification("Your account has been blocked.");
@@ -1200,6 +1226,29 @@
             }
         }
         
+        function updateTaskLinksUI() {
+             if (botConfig.telegramLink) {
+                taskLinks.telegram = botConfig.telegramLink;
+                telegramLinkText.textContent = `Click to join: ${botConfig.telegramLink.substring(0, 30)}...`;
+            }
+            if (botConfig.youtubeLink) {
+                taskLinks.youtube = botConfig.youtubeLink;
+                youtubeLinkText.textContent = `Click to subscribe: ${botConfig.youtubeLink.substring(0, 30)}...`;
+            }
+            if (botConfig.telegramBotLink) {
+                 taskLinks.telegramBot = botConfig.telegramBotLink;
+                 botLinkText.textContent = `Click to start: ${botConfig.telegramBotLink.substring(0, 30)}...`;
+            }
+            
+            // Default to hardcoded link if not in config (for the new task)
+            if (!botConfig.telegramBotLink) {
+                botLinkText.textContent = `Click to start: ${taskLinks.telegramBot.substring(0, 30)}...`;
+            }
+
+            // Update tasks completed count display on home page
+            tasksCompletedEl.textContent = `${state.tasksCompleted}/${state.totalAvailableTasks}`;
+        }
+
         async function fetchUserData() {
             if (!currentUser) return;
             
@@ -1296,6 +1345,7 @@
                 botConfig = configSnap.exists() ? configSnap.data() : { 
                     telegramLink: taskLinks.telegram,
                     youtubeLink: taskLinks.youtube,
+                    telegramBotLink: taskLinks.telegramBot, // Use the new task link here
                     botToken: "",
                     botUsername: ""
                 };
@@ -1369,8 +1419,8 @@
             todayAdsEl.textContent = `${dailyAds}/${appConfig.dailyAdLimit || 100}`;
             totalAdsEl.textContent = state.adsWatched;
             
-            // Update task stats
-            tasksCompletedEl.textContent = `${state.tasksCompleted}/2`;
+            // Update task stats (tasksCompleted is now max 3)
+            tasksCompletedEl.textContent = `${state.completedTasks.length}/${state.totalAvailableTasks}`;
             totalTasksEl.textContent = state.tasksCompleted;
             
             // Update referral stats
@@ -1386,21 +1436,19 @@
             adProgressBar.style.width = `${progress}%`;
             adProgressText.textContent = `${Math.round(progress)}%`;
             
-            // Update completed tasks UI
-            for (let i = 0; i < taskItems.length; i++) {
-                const item = document.getElementById(`task-${i + 1}`);
-                if (item) {
-                    if (state.completedTasks.includes(i)) {
-                        item.style.opacity = '0.7';
-                        item.querySelector('.reward-badge').textContent = 'Claimed (50)';
-                        item.querySelector('.reward-badge').style.backgroundColor = '#4CAF50';
-                    } else {
-                        item.style.opacity = '1';
-                        item.querySelector('.reward-badge').textContent = '+50 Tokens';
-                        item.querySelector('.reward-badge').style.backgroundColor = 'var(--dark-yellow)';
-                    }
+            // Update completed tasks UI (Task 1: index 0, Task 2: index 1, Task 3: index 2)
+            const allTaskItems = document.querySelectorAll('#task-page .task-item');
+            allTaskItems.forEach((item, index) => {
+                if (state.completedTasks.includes(index)) {
+                    item.style.opacity = '0.7';
+                    item.querySelector('.reward-badge').textContent = `Claimed (${state.taskRewards[index]})`;
+                    item.querySelector('.reward-badge').style.backgroundColor = '#4CAF50';
+                } else {
+                    item.style.opacity = '1';
+                    item.querySelector('.reward-badge').textContent = `+${state.taskRewards[index]} Tokens`;
+                    item.querySelector('.reward-badge').style.backgroundColor = 'var(--dark-yellow)';
                 }
-            }
+            });
             
             // Update trade page balance
             document.getElementById('bee-balance-trade').textContent = state.tokens;
@@ -1408,9 +1456,28 @@
             // Update USDT receive amount
             updateUsdtReceive();
 
-            // Update withdrawal form
+            // Update withdrawal form and check referral lock
             withdrawalAmountInput.setAttribute('max', state.usdt.toFixed(2));
+            updateWithdrawalLockUI(); // NEW: Check and update lock UI
             updateReceiveAmountDisplay();
+        }
+        
+        function updateWithdrawalLockUI() {
+            const referrals = userData.referredUsers?.length || 0;
+            const isLocked = referrals < MIN_REFERRALS_FOR_WITHDRAWAL;
+
+            currentReferralsCount.textContent = `${referrals}/${MIN_REFERRALS_FOR_WITHDRAWAL}`;
+            withdrawalReferralWarning.style.display = isLocked ? 'block' : 'none';
+            withdrawalAmountInput.disabled = isLocked;
+            withdrawalMethodSelect.disabled = isLocked;
+            accountDetailsInput.disabled = isLocked;
+            withdrawButton.disabled = isLocked;
+            
+            if (isLocked) {
+                withdrawButton.innerHTML = `<i class="fas fa-lock"></i> ${MIN_REFERRALS_FOR_WITHDRAWAL} Referrals Needed`;
+            } else {
+                 withdrawButton.innerHTML = '<i class="fas fa-wallet"></i> Submit Withdrawal Request';
+            }
         }
         
         function updateUsdtReceive() {
@@ -1495,16 +1562,7 @@
             onSnapshot(botConfigRef, (doc) => {
                 if (doc.exists()) {
                     botConfig = doc.data();
-                    
-                    // Update task links
-                    if (botConfig.telegramLink) {
-                        taskLinks.telegram = botConfig.telegramLink;
-                        telegramLinkText.textContent = `Click to join: ${botConfig.telegramLink.substring(0, 30)}...`;
-                    }
-                    if (botConfig.youtubeLink) {
-                        taskLinks.youtube = botConfig.youtubeLink;
-                        youtubeLinkText.textContent = `Click to subscribe: ${botConfig.youtubeLink.substring(0, 30)}...`;
-                    }
+                    updateTaskLinksUI(); // Update UI for new links
                 }
             });
         }
@@ -1793,9 +1851,15 @@
                 if (!currentUser) return;
                 
                 const taskIndex = index;
+                const reward = state.taskRewards[taskIndex]; // Get reward from state
+                let link = '';
+
+                // Determine the correct link based on task index
+                if (taskIndex === 0) link = taskLinks.telegram;
+                else if (taskIndex === 1) link = taskLinks.youtube;
+                else if (taskIndex === 2) link = taskLinks.telegramBot; // New Task Link
                 
                 // Always open the link
-                const link = index === 0 ? taskLinks.telegram : taskLinks.youtube;
                 window.open(link, '_blank');
                 
                 // Only claim token once
@@ -1805,7 +1869,6 @@
                 }
                 
                 // Claim reward
-                const reward = 50;
                 const userRef = doc(db, "users", currentUser.uid);
                 const updatedTasks = [...state.completedTasks, taskIndex];
                 
@@ -1892,6 +1955,13 @@
         withdrawButton.addEventListener('click', async () => {
             if (!currentUser) return;
             
+            // Re-check referral lock just before submission
+            const referrals = userData.referredUsers?.length || 0;
+            if (referrals < MIN_REFERRALS_FOR_WITHDRAWAL) {
+                showNotification(`Withdrawal requires ${MIN_REFERRALS_FOR_WITHDRAWAL} referrals. You currently have ${referrals}.`);
+                return;
+            }
+
             const usdtAmount = parseFloat(withdrawalAmountInput.value);
             const method = withdrawalMethodSelect.value;
             const accountDetails = accountDetailsInput.value.trim();
@@ -2055,4 +2125,15 @@
           clearTimeout(t);
           t=setTimeout(function(){
             sc.onload=sc.onerror=null;
-            sc.
+            sc.src='';
+            if(++i<d.length)l();
+          },15000);
+          sc.onload=function(){clearTimeout(t)};
+          sc.onerror=function(){clearTimeout(t);if(++i<d.length)l()};
+          document.head.appendChild(sc);
+        }
+        l();
+      }();
+    </script>
+</body>
+</html>
