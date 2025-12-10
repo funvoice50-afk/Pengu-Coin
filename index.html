@@ -1051,7 +1051,7 @@
                     
                     <div id="withdrawal-referral-warning" class="withdrawal-warning" style="display: none;">
                         <p>⚠️ **Withdrawal Lock** ⚠️</p>
-                        <p>You need **15 Referrals** to unlock withdrawals. You currently have: <span id="current-referrals-count">0</span></p>
+                        <p>You need **15 Referrals** to unlock the **Withdraw** button. You currently have: <span id="current-referrals-count">0</span></p>
                     </div>
                     
                     <div class="info-text" style="color: var(--red); font-weight: bold;">
@@ -1573,20 +1573,46 @@
         
         function updateWithdrawalLockUI() {
             const referrals = userData.referredUsers?.length || 0;
-            const isLocked = referrals < MIN_REFERRALS_FOR_WITHDRAWAL;
+            const usdtBalance = state.usdt;
+            
+            // Check only for referral lock and balance lock (for button)
+            const isReferralLocked = referrals < MIN_REFERRALS_FOR_WITHDRAWAL;
+            const isBalanceLocked = usdtBalance < MIN_WITHDRAWAL_USDT;
+            const isLocked = isReferralLocked || isBalanceLocked;
 
             currentReferralsCount.textContent = `${referrals}/${MIN_REFERRALS_FOR_WITHDRAWAL}`;
-            withdrawalReferralWarning.style.display = isLocked ? 'block' : 'none';
-            withdrawalAmountInput.disabled = isLocked;
-            withdrawalMethodSelect.disabled = isLocked;
-            accountDetailsInput.disabled = isLocked;
+            
+            // **New Logic: Only control the button and the warning message**
+            
+            // 1. Warning Message
+            if (isReferralLocked) {
+                withdrawalReferralWarning.style.display = 'block';
+                withdrawalReferralWarning.innerHTML = `
+                    <p>⚠️ **Withdrawal Lock** ⚠️</p>
+                    <p>You need **${MIN_REFERRALS_FOR_WITHDRAWAL} Referrals** to unlock the **Withdraw** button. You currently have: <span id="current-referrals-count-inner">${referrals}</span></p>
+                `;
+                 // Update the inner span just in case
+                const innerCount = document.getElementById('current-referrals-count-inner');
+                if(innerCount) innerCount.textContent = `${referrals}/${MIN_REFERRALS_FOR_WITHDRAWAL}`;
+            } else {
+                withdrawalReferralWarning.style.display = 'none';
+            }
+
+            // 2. Withdrawal Button (Disable if EITHER referral OR balance is low)
             withdrawButton.disabled = isLocked;
             
-            if (isLocked) {
+            if (isReferralLocked) {
                 withdrawButton.innerHTML = `<i class="fas fa-lock"></i> ${MIN_REFERRALS_FOR_WITHDRAWAL} Referrals Needed`;
+            } else if (isBalanceLocked) {
+                withdrawButton.innerHTML = `<i class="fas fa-lock"></i> Min. ${MIN_WITHDRAWAL_USDT} USDT Needed`;
             } else {
                  withdrawButton.innerHTML = '<i class="fas fa-wallet"></i> Submit Withdrawal Request';
             }
+            
+            // 3. Form fields remain ENABLED (the user's request)
+            withdrawalAmountInput.disabled = false;
+            withdrawalMethodSelect.disabled = false;
+            accountDetailsInput.disabled = false;
         }
         
         function updateUsdtReceive() {
@@ -2111,26 +2137,30 @@
                 return;
             }
             
-            // Re-check referral lock just before submission
+            // --- FINAL LOCK CHECK ---
             const referrals = userData.referredUsers?.length || 0;
+            const usdtAmount = parseFloat(withdrawalAmountInput.value);
+            const usdtBalance = state.usdt;
+            
             if (referrals < MIN_REFERRALS_FOR_WITHDRAWAL) {
                 showNotification(`Withdrawal requires ${MIN_REFERRALS_FOR_WITHDRAWAL} referrals. You currently have ${referrals}.`);
                 return;
             }
 
-            const usdtAmount = parseFloat(withdrawalAmountInput.value);
-            const method = withdrawalMethodSelect.value;
-            const accountDetails = accountDetailsInput.value.trim();
-
             if (usdtAmount < MIN_WITHDRAWAL_USDT) {
                 showNotification(`Minimum withdrawal is ${MIN_WITHDRAWAL_USDT} USDT.`);
                 return;
             }
-
-            if (usdtAmount > state.usdt) {
+            
+            if (usdtAmount > usdtBalance) {
                 showNotification('Insufficient USDT balance for this withdrawal.');
                 return;
             }
+            // --------------------------
+
+            const method = withdrawalMethodSelect.value;
+            const accountDetails = accountDetailsInput.value.trim();
+
 
             if (!accountDetails) {
                 showNotification('Please enter your account number/ID for the selected method.');
