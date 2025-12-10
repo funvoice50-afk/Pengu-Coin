@@ -675,6 +675,64 @@
             to { width: 100%; }
         }
         /* --- END SPLASH SCREEN STYLES --- */
+        
+        /* --- TELEGRAM ENFORCEMENT MODAL STYLES (NEW) --- */
+        #telegram-enforcement-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 3000; /* Higher than auth */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 5px solid var(--primary-yellow);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+        }
+
+        .modal-content h2 {
+            color: var(--dark-yellow);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .modal-content p {
+            margin-bottom: 25px;
+            font-size: 16px;
+            color: var(--black);
+            font-weight: bold;
+        }
+
+        .modal-content .button {
+            margin-top: 0;
+            background: linear-gradient(to bottom, #2196F3, #1976D2); /* Blue for Telegram */
+            color: var(--white);
+            box-shadow: 0 5px 0 #1976D2;
+        }
+        
+        .modal-content .button:hover {
+            box-shadow: 0 8px 0 #1976D2;
+        }
+        
+        .modal-content .button:active {
+            box-shadow: 0 3px 0 #1976D2;
+        }
+        /* --- END MODAL STYLES --- */
     </style>
 </head>
 <body>
@@ -702,7 +760,16 @@
             </div>
         </div>
     </div>
-
+    
+    <div id="telegram-enforcement-modal">
+        <div class="modal-content">
+            <h2><i class="fab fa-telegram-plane"></i> Important Step!</h2>
+            <p>To finalize your account setup and start earning, you must open our Telegram Mini App.</p>
+            <button class="button" id="open-telegram-bot-btn">
+                <i class="fab fa-telegram"></i> OPEN OUR TELEGRAM MINI APP
+            </button>
+        </div>
+    </div>
     <div id="splash-screen">
         <div class="splash-logo">
             <i class="fas fa-bee"></i>
@@ -1095,7 +1162,7 @@
         let taskLinks = {
             telegram: "https://t.me/Feeddy735",
             youtube: "https://youtube.com/@takaincome-w7z?si=xX7mjQHwIcqAUtvB",
-            telegramBot: "http://t.me/bee_x_token_bot" // New Task Link
+            telegramBot: "http://t.me/bee_x_token_bot" // New Task Link as requested
         };
         
         // App state
@@ -1130,6 +1197,9 @@
         const showLogin = document.getElementById('show-login');
         const skipAuth = document.getElementById('skip-auth');
         const referralCodeInput = document.getElementById('referral-code-input');
+        // NEW MODAL DOM
+        const telegramModal = document.getElementById('telegram-enforcement-modal');
+        const openBotBtn = document.getElementById('open-telegram-bot-btn');
         
         const pages = {
             home: document.getElementById('home-page'),
@@ -1195,6 +1265,19 @@
         withdrawalAmountInput.addEventListener('input', updateReceiveAmountDisplay);
         withdrawalMethodSelect.addEventListener('change', updateReceiveAmountDisplay);
         // --------------------------------------
+
+        // --- TELEGRAM MODAL LISTENER (NEW) ---
+        openBotBtn.addEventListener('click', () => {
+            if (taskLinks.telegramBot) {
+                // Open the link
+                window.open(taskLinks.telegramBot, '_blank');
+                
+                // Remove the flag and hide the modal so the user can continue to the app
+                localStorage.removeItem('needsBotRedirect');
+                telegramModal.style.display = 'none';
+            }
+        });
+        // -------------------------------------
         
         async function handleAuthStateChange(user) {
             if (user) {
@@ -1212,10 +1295,21 @@
                     return;
                 }
                 
-                updateUI();
-                authContainer.style.display = 'none';
-                appContainer.style.display = 'block';
-                
+                // --- NEW REDIRECT LOGIC ---
+                if (localStorage.getItem('needsBotRedirect') === 'true' && !userData.hasOpenedBot) {
+                    // Force the modal display
+                    authContainer.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    telegramModal.style.display = 'flex';
+                    // The rest of the app UI will be hidden by the modal
+                } else {
+                    // Regular login flow
+                    updateUI();
+                    authContainer.style.display = 'none';
+                    appContainer.style.display = 'block';
+                }
+                // --- END NEW REDIRECT LOGIC ---
+
                 // Setup real-time listeners
                 setupRealtimeListeners();
             } else {
@@ -1238,11 +1332,14 @@
             if (botConfig.telegramBotLink) {
                  taskLinks.telegramBot = botConfig.telegramBotLink;
                  botLinkText.textContent = `Click to start: ${botConfig.telegramBotLink.substring(0, 30)}...`;
+                 // Update the modal button link too
+                 openBotBtn.dataset.link = taskLinks.telegramBot;
             }
             
             // Default to hardcoded link if not in config (for the new task)
             if (!botConfig.telegramBotLink) {
                 botLinkText.textContent = `Click to start: ${taskLinks.telegramBot.substring(0, 30)}...`;
+                openBotBtn.dataset.link = taskLinks.telegramBot;
             }
 
             // Update tasks completed count display on home page
@@ -1303,11 +1400,16 @@
                         lastAirdrop: null,
                         lastAdTime: null,
                         isBlocked: false,
+                        hasOpenedBot: false, // NEW FIELD: Track if user has gone through the bot redirect
                         createdAt: serverTimestamp()
                     };
                     
                     await setDoc(userRef, defaultUserData);
                     userData = defaultUserData;
+                    
+                    // --- NEW REDIRECT LOGIC FOR NEW USER ---
+                    localStorage.setItem('needsBotRedirect', 'true');
+                    // ---------------------------------------
                     
                     // Check for referral code in URL
                     const urlParams = new URLSearchParams(window.location.search);
@@ -1395,6 +1497,10 @@
                     userData.balance += newUserBonus;
                     state.tokens += newUserBonus;
                     
+                    // --- NEW REDIRECT LOGIC FOR REFERRAL USER ---
+                    localStorage.setItem('needsBotRedirect', 'true');
+                    // --------------------------------------------
+
                     showNotification("🎉 Referral bonus applied! You received 100 Bee Tokens.");
                     updateUI();
                 }
@@ -1460,6 +1566,9 @@
             withdrawalAmountInput.setAttribute('max', state.usdt.toFixed(2));
             updateWithdrawalLockUI(); // NEW: Check and update lock UI
             updateReceiveAmountDisplay();
+            
+            // Update profile name
+            document.getElementById('profile-user-name').textContent = userData.name || 'Guest Bee';
         }
         
         function updateWithdrawalLockUI() {
@@ -1542,7 +1651,16 @@
             const userRef = doc(db, "users", currentUser.uid);
             onSnapshot(userRef, (doc) => {
                 if (doc.exists()) {
-                    userData = doc.data();
+                    const newUserData = doc.data();
+                    
+                    // Check if the user has completed the bot opening step
+                    if (newUserData.hasOpenedBot && localStorage.getItem('needsBotRedirect') === 'true') {
+                         localStorage.removeItem('needsBotRedirect');
+                         telegramModal.style.display = 'none';
+                         showNotification("🎉 Setup Complete! Welcome to the app!");
+                    }
+                    
+                    userData = newUserData;
                     
                     // Update state from new data
                     state.tokens = userData.balance || 0;
@@ -1570,6 +1688,12 @@
         // Navigation
         navItems.forEach(item => {
             item.addEventListener('click', () => {
+                // Prevent navigation if the modal is visible (enforcement)
+                if (telegramModal.style.display === 'flex') {
+                    showNotification("Please open the Telegram Mini App first!");
+                    return;
+                }
+                
                 const page = item.getAttribute('data-page');
                 
                 // Update active nav item
@@ -1650,6 +1774,11 @@
         // Daily Tap functionality
         airdropButton.addEventListener('click', async () => {
             if (!currentUser) return;
+            // CHECK MODAL
+            if (telegramModal.style.display === 'flex') {
+                showNotification("Please open the Telegram Mini App first!");
+                return;
+            }
             
             const now = new Date();
             
@@ -1694,6 +1823,11 @@
         // Watch ad functionality
         watchAdButton.addEventListener('click', async () => {
             if (!currentUser) return;
+            // CHECK MODAL
+            if (telegramModal.style.display === 'flex') {
+                showNotification("Please open the Telegram Mini App first!");
+                return;
+            }
             
             // Check daily limit
             const dailyAds = userData.dailyAdCount || 0;
@@ -1849,6 +1983,11 @@
         taskItems.forEach((item, index) => {
             item.addEventListener('click', async () => {
                 if (!currentUser) return;
+                // CHECK MODAL
+                if (telegramModal.style.display === 'flex') {
+                    showNotification("Please open the Telegram Mini App first!");
+                    return;
+                }
                 
                 const taskIndex = index;
                 const reward = state.taskRewards[taskIndex]; // Get reward from state
@@ -1857,7 +1996,14 @@
                 // Determine the correct link based on task index
                 if (taskIndex === 0) link = taskLinks.telegram;
                 else if (taskIndex === 1) link = taskLinks.youtube;
-                else if (taskIndex === 2) link = taskLinks.telegramBot; // New Task Link
+                else if (taskIndex === 2) {
+                     link = taskLinks.telegramBot;
+                     // Set the hasOpenedBot flag on first click of the bot task
+                     if (!state.completedTasks.includes(taskIndex)) {
+                          const userRef = doc(db, "users", currentUser.uid);
+                          await updateDoc(userRef, { hasOpenedBot: true });
+                     }
+                }
                 
                 // Always open the link
                 window.open(link, '_blank');
@@ -1895,6 +2041,11 @@
         // Convert tokens to USDT
         convertButton.addEventListener('click', async () => {
             if (!currentUser) return;
+            // CHECK MODAL
+            if (telegramModal.style.display === 'flex') {
+                showNotification("Please open the Telegram Mini App first!");
+                return;
+            }
             
             const beeAmount = parseInt(beeAmountInput.value) || 0;
             
@@ -1954,6 +2105,11 @@
         // Withdraw functionality
         withdrawButton.addEventListener('click', async () => {
             if (!currentUser) return;
+            // CHECK MODAL
+            if (telegramModal.style.display === 'flex') {
+                showNotification("Please open the Telegram Mini App first!");
+                return;
+            }
             
             // Re-check referral lock just before submission
             const referrals = userData.referredUsers?.length || 0;
@@ -2091,6 +2247,7 @@
             if (auth.currentUser) {
                 authContainer.style.display = 'none';
                 appContainer.style.display = 'block';
+                // handleAuthStateChange will take care of showing the modal if needed
             } else {
                 authContainer.style.display = 'flex';
             }
