@@ -733,6 +733,75 @@
             box-shadow: 0 3px 0 #1976D2;
         }
         /* --- END MODAL STYLES --- */
+
+        /* --- V2 UPDATE MODAL STYLES (NEW) --- */
+        #v2-update-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 4000; /* Highest priority */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s;
+        }
+
+        .v2-modal-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            border: 5px solid var(--primary-yellow);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.7);
+        }
+
+        .v2-modal-content h2 {
+            color: var(--dark-yellow);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 28px;
+        }
+
+        .v2-modal-content .v2-bonus-amount {
+            background: linear-gradient(to right, var(--primary-yellow), var(--dark-yellow));
+            padding: 15px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--black);
+            border: 3px solid var(--black);
+            animation: pulse 2s infinite;
+        }
+
+        .v2-modal-content p {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: var(--black);
+            line-height: 1.6;
+        }
+
+        .v2-modal-content .button {
+            margin-top: 10px;
+            font-size: 20px;
+            padding: 18px;
+        }
+
+        .v2-modal-content .v2-note {
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+            font-style: italic;
+        }
+        /* --- END V2 MODAL STYLES --- */
     </style>
 </head>
 <body>
@@ -770,6 +839,22 @@
             </button>
         </div>
     </div>
+
+    <!-- NEW V2 Update Modal -->
+    <div id="v2-update-modal">
+        <div class="v2-modal-content">
+            <h2><i class="fas fa-gift"></i> 🎁 V2 UPDATE BONUS 🎁</h2>
+            <div class="v2-bonus-amount">$2.00 GIFT</div>
+            <p><strong>Bee X Token V2 Update Celebration!</strong></p>
+            <p>We're excited to announce that <strong>$2.00</strong> has been automatically added to your account as a gift for the V2 update!</p>
+            <p>🎉 Enjoy your bonus and continue earning with Bee Token!</p>
+            <button class="button" id="close-v2-modal">
+                <i class="fas fa-check-circle"></i> CLAIM & CONTINUE
+            </button>
+            <p class="v2-note">The $2.00 has been automatically added to your USDT balance.</p>
+        </div>
+    </div>
+    
     <div id="splash-screen">
         <div class="splash-logo">
             <i class="fas fa-bee"></i>
@@ -858,7 +943,7 @@
                 
                 <div class="card">
                     <h3 style="margin-bottom: 15px; text-align: center;">Watch Ads & Earn</h3>
-                    <p style="text-align: center; margin-bottom: 15px;">Watch up to <strong>100 ads per day</strong> (50 per hour). Each ad gives you <strong>10 Bee Tokens</strong>.</p>
+                    <p style="text-align: center; margin-bottom: 15px;">Watch up to <strong>100 ads per day</strong> (50 per hour). Each ad gives you <strong>100 Bee Tokens</strong>.</p>
                     
                     <div id="current-ad" style="text-align: center; margin-bottom: 20px; padding: 20px; background-color: var(--gray); border-radius: 10px; border: 2px dashed var(--black);">
                          <i class="fas fa-video" style="font-size: 40px; color: var(--blue);"></i>
@@ -867,7 +952,7 @@
                     </div>
                     
                     <button class="button button-primary" id="watch-ad">
-                        <i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens
+                        <i class="fas fa-play-circle"></i> Watch Ad & Earn 100 Tokens
                     </button>
                     
                     <div class="info-text">
@@ -1055,12 +1140,12 @@
                     </div>
                     
                     <div class="info-text" style="color: var(--red); font-weight: bold;">
-                        <p>Minimum Withdrawal: 10 USDT</p>
+                        <p>Minimum Withdrawal: 50 USDT</p>
                     </div>
 
                     <div class="withdrawal-form-group">
-                        <label for="withdrawal-amount">USDT Amount (Min. 10):</label>
-                        <input type="number" id="withdrawal-amount" min="10" step="0.01" value="10" required>
+                        <label for="withdrawal-amount">USDT Amount (Min. 50):</label>
+                        <input type="number" id="withdrawal-amount" min="50" step="0.01" value="50" required>
                     </div>
 
                     <div class="withdrawal-form-group">
@@ -1079,7 +1164,7 @@
                     </div>
 
                     <div class="withdrawal-result">
-                        You will receive: <span id="receive-amount">10.00 USDT</span>
+                        You will receive: <span id="receive-amount">50.00 USDT</span>
                     </div>
 
                     <button class="button button-primary" id="withdraw-button">
@@ -1149,9 +1234,10 @@
         let appConfig = {};
         let botConfig = {};
 
-        // --- NEW EXCHANGE RATES & MINIMUM WITHDRAWAL ---
-        const MIN_WITHDRAWAL_USDT = 10;
-        const MIN_REFERRALS_FOR_WITHDRAWAL = 15; // New constant
+        // --- UPDATED EXCHANGE RATES & MINIMUM WITHDRAWAL ---
+        const MIN_WITHDRAWAL_USDT = 50; // Updated from 10 to 50
+        const MIN_REFERRALS_FOR_WITHDRAWAL = 15;
+        const AD_REWARD_TOKENS = 100; // Updated from 10 to 100
         const EXCHANGE_RATES = {
             BDT: 125, // 1 USDT = 125 BDT
             INR: 90   // 1 USDT = 90 INR
@@ -1162,7 +1248,7 @@
         let taskLinks = {
             telegram: "https://t.me/Feeddy735",
             youtube: "https://youtube.com/@takaincome-w7z?si=xX7mjQHwIcqAUtvB",
-            telegramBot: "http://t.me/bee_x_token_bot" // New Task Link as requested
+            telegramBot: "http://t.me/bee_x_token_bot"
         };
         
         // App state
@@ -1176,8 +1262,9 @@
             completedTasks: [],
             referrals: 0,
             referralEarnings: 0,
-            totalAvailableTasks: 3, // Updated to 3
-            taskRewards: [50, 50, 200] // Updated rewards for tasks 1, 2, 3
+            totalAvailableTasks: 3,
+            taskRewards: [50, 50, 200],
+            hasReceivedV2Bonus: false // New state for V2 bonus tracking
         };
         
         // DOM Elements
@@ -1200,6 +1287,8 @@
         // NEW MODAL DOM
         const telegramModal = document.getElementById('telegram-enforcement-modal');
         const openBotBtn = document.getElementById('open-telegram-bot-btn');
+        const v2UpdateModal = document.getElementById('v2-update-modal');
+        const closeV2ModalBtn = document.getElementById('close-v2-modal');
         
         const pages = {
             home: document.getElementById('home-page'),
@@ -1239,18 +1328,14 @@
         const profileReferralsEl = document.getElementById('profile-referrals');
         const telegramLinkText = document.getElementById('telegram-link-text');
         const youtubeLinkText = document.getElementById('youtube-link-text');
-        // New Task DOM
         const botLinkText = document.getElementById('bot-link-text');
-        // Withdrawal Warning DOM
         const withdrawalReferralWarning = document.getElementById('withdrawal-referral-warning');
         const currentReferralsCount = document.getElementById('current-referrals-count');
 
-        // --- NEW WITHDRAWAL DOM ELEMENTS ---
         const withdrawalAmountInput = document.getElementById('withdrawal-amount');
         const withdrawalMethodSelect = document.getElementById('withdrawal-method');
         const accountDetailsInput = document.getElementById('account-details');
         const receiveAmountEl = document.getElementById('receive-amount');
-        // -----------------------------------
         
         // Percentage buttons for trade
         document.getElementById('btn-25').addEventListener('click', () => setPercentage(25));
@@ -1258,26 +1343,24 @@
         document.getElementById('btn-75').addEventListener('click', () => setPercentage(75));
         document.getElementById('btn-100').addEventListener('click', () => setPercentage(100));
         
+        // Close V2 modal button
+        closeV2ModalBtn.addEventListener('click', () => {
+            v2UpdateModal.style.display = 'none';
+        });
+        
         // Authentication state change handler
         onAuthStateChanged(auth, handleAuthStateChange);
 
-        // --- NEW WITHDRAWAL LOGIC LISTENERS ---
         withdrawalAmountInput.addEventListener('input', updateReceiveAmountDisplay);
         withdrawalMethodSelect.addEventListener('change', updateReceiveAmountDisplay);
-        // --------------------------------------
-
-        // --- TELEGRAM MODAL LISTENER (NEW) ---
+        
         openBotBtn.addEventListener('click', () => {
             if (taskLinks.telegramBot) {
-                // Open the link
                 window.open(taskLinks.telegramBot, '_blank');
-                
-                // Remove the flag and hide the modal so the user can continue to the app
                 localStorage.removeItem('needsBotRedirect');
                 telegramModal.style.display = 'none';
             }
         });
-        // -------------------------------------
         
         async function handleAuthStateChange(user) {
             if (user) {
@@ -1286,7 +1369,6 @@
                 await fetchAppConfig();
                 await fetchBotConfig();
                 
-                // Update task links from bot config
                 updateTaskLinksUI();
                 
                 if (userData.isBlocked) {
@@ -1295,22 +1377,24 @@
                     return;
                 }
                 
-                // --- NEW REDIRECT LOGIC ---
+                // Check if user should receive V2 bonus
+                await checkAndApplyV2Bonus();
+                
+                // Show V2 modal if bonus was just applied
+                if (state.hasReceivedV2Bonus && !localStorage.getItem('v2BonusShown_' + currentUser.uid)) {
+                    showV2UpdateModal();
+                }
+                
                 if (localStorage.getItem('needsBotRedirect') === 'true' && !userData.hasOpenedBot) {
-                    // Force the modal display
                     authContainer.style.display = 'none';
                     appContainer.style.display = 'block';
                     telegramModal.style.display = 'flex';
-                    // The rest of the app UI will be hidden by the modal
                 } else {
-                    // Regular login flow
                     updateUI();
                     authContainer.style.display = 'none';
                     appContainer.style.display = 'block';
                 }
-                // --- END NEW REDIRECT LOGIC ---
 
-                // Setup real-time listeners
                 setupRealtimeListeners();
             } else {
                 currentUser = null;
@@ -1318,6 +1402,55 @@
                 authContainer.style.display = 'flex';
                 appContainer.style.display = 'none';
             }
+        }
+        
+        // NEW FUNCTION: Check and apply V2 bonus
+        async function checkAndApplyV2Bonus() {
+            if (!currentUser || !userData) return;
+            
+            const userRef = doc(db, "users", currentUser.uid);
+            
+            // Check if user has already received V2 bonus
+            if (userData.hasReceivedV2Bonus) {
+                state.hasReceivedV2Bonus = true;
+                return;
+            }
+            
+            // Apply V2 bonus ($2.00 = 2000 Bee Tokens at 0.001 rate)
+            const v2BonusUSDT = 2.00;
+            const v2BonusTokens = v2BonusUSDT / 0.001; // 2000 tokens
+            
+            try {
+                await updateDoc(userRef, {
+                    balance: (userData.balance || 0) + v2BonusTokens,
+                    usdtBalance: (userData.usdtBalance || 0) + v2BonusUSDT,
+                    hasReceivedV2Bonus: true
+                });
+                
+                // Update local state
+                userData.balance = (userData.balance || 0) + v2BonusTokens;
+                userData.usdtBalance = (userData.usdtBalance || 0) + v2BonusUSDT;
+                userData.hasReceivedV2Bonus = true;
+                state.tokens = userData.balance;
+                state.usdt = userData.usdtBalance;
+                state.hasReceivedV2Bonus = true;
+                
+                console.log("V2 bonus applied: $2.00 added to account");
+            } catch (error) {
+                console.error("Error applying V2 bonus:", error);
+            }
+        }
+        
+        // NEW FUNCTION: Show V2 update modal
+        function showV2UpdateModal() {
+            // Mark as shown for this user
+            localStorage.setItem('v2BonusShown_' + currentUser.uid, 'true');
+            
+            // Show the modal
+            v2UpdateModal.style.display = 'flex';
+            
+            // Update UI to reflect new balance
+            updateUI();
         }
         
         function updateTaskLinksUI() {
@@ -1332,17 +1465,14 @@
             if (botConfig.telegramBotLink) {
                  taskLinks.telegramBot = botConfig.telegramBotLink;
                  botLinkText.textContent = `Click to start: ${botConfig.telegramBotLink.substring(0, 30)}...`;
-                 // Update the modal button link too
                  openBotBtn.dataset.link = taskLinks.telegramBot;
             }
             
-            // Default to hardcoded link if not in config (for the new task)
             if (!botConfig.telegramBotLink) {
                 botLinkText.textContent = `Click to start: ${taskLinks.telegramBot.substring(0, 30)}...`;
                 openBotBtn.dataset.link = taskLinks.telegramBot;
             }
 
-            // Update tasks completed count display on home page
             tasksCompletedEl.textContent = `${state.tasksCompleted}/${state.totalAvailableTasks}`;
         }
 
@@ -1375,6 +1505,7 @@
                     state.completedTasks = userData.completedTasks || [];
                     state.referrals = userData.referredUsers?.length || 0;
                     state.referralEarnings = userData.referralEarnings || 0;
+                    state.hasReceivedV2Bonus = userData.hasReceivedV2Bonus || false;
                     
                     // Convert timestamps
                     state.lastAirdrop = userData.lastAirdrop ? userData.lastAirdrop.toDate() : null;
@@ -1400,18 +1531,16 @@
                         lastAirdrop: null,
                         lastAdTime: null,
                         isBlocked: false,
-                        hasOpenedBot: false, // NEW FIELD: Track if user has gone through the bot redirect
+                        hasOpenedBot: false,
+                        hasReceivedV2Bonus: false, // New field for V2 bonus tracking
                         createdAt: serverTimestamp()
                     };
                     
                     await setDoc(userRef, defaultUserData);
                     userData = defaultUserData;
                     
-                    // --- NEW REDIRECT LOGIC FOR NEW USER ---
-                    localStorage.setItem('pendingReferralCode', 'none'); // Use a placeholder if no ref code, to trigger modal
-                    // ---------------------------------------
+                    localStorage.setItem('pendingReferralCode', 'none');
                     
-                    // Check for referral code in URL
                     const urlParams = new URLSearchParams(window.location.search);
                     const refCode = urlParams.get('ref');
                     
@@ -1420,13 +1549,11 @@
                     }
                 }
                 
-                // Process pending referral *after* initial user data load
                 const pendingRefCode = localStorage.getItem('pendingReferralCode');
                 if (pendingRefCode && pendingRefCode !== 'none' && !userData.referredBy) {
                     await applyReferralBonus(pendingRefCode);
                     localStorage.removeItem('pendingReferralCode');
                 } else if(pendingRefCode === 'none') {
-                    // If no ref code but it was a new user, force modal redirect
                     localStorage.removeItem('pendingReferralCode');
                     localStorage.setItem('needsBotRedirect', 'true');
                 }
@@ -1442,7 +1569,7 @@
             try {
                 const configSnap = await getDoc(configRef);
                 appConfig = configSnap.exists() ? configSnap.data() : { 
-                    minWithdrawal: 20, // Keep default, but use local constant for enforcement
+                    minWithdrawal: 50, // Updated to match new minimum
                     dailyAdLimit: 100,
                     coinValueCoins: 1000,
                     coinValueUsdt: 1
@@ -1459,7 +1586,7 @@
                 botConfig = configSnap.exists() ? configSnap.data() : { 
                     telegramLink: taskLinks.telegram,
                     youtubeLink: taskLinks.youtube,
-                    telegramBotLink: taskLinks.telegramBot, // Use the new task link here
+                    telegramBotLink: taskLinks.telegramBot,
                     botToken: "",
                     botUsername: ""
                 };
@@ -1485,36 +1612,26 @@
                     const referrerRef = doc(db, "users", referrerDoc.id);
                     const referrerData = referrerDoc.data();
                     
-                    // Reward for referrer: 50 coins
                     const referrerReward = 50; 
                     
-                    // Update referrer's data
-                    const newReferredUsers = [...(referrerData.referredUsers || []), currentUser.uid];
                     await updateDoc(referrerRef, {
-                        referredUsers: newReferredUsers,
+                        referredUsers: [...(referrerData.referredUsers || []), currentUser.uid],
                         referralEarnings: (referrerData.referralEarnings || 0) + referrerReward,
-                        // --- FIX START: Add referral reward to the main token balance ---
                         balance: (referrerData.balance || 0) + referrerReward
-                        // --- FIX END ---
                     });
                     
-                    // Update current user's data
                     const userRef = doc(db, "users", currentUser.uid);
-                    // Giving the new user a 100 coin bonus
                     const newUserBonus = 100; 
                     await updateDoc(userRef, {
                         referredBy: referrerCode,
                         balance: (userData.balance || 0) + newUserBonus
                     });
                     
-                    // Update local state
                     userData.referredBy = referrerCode;
                     userData.balance += newUserBonus;
                     state.tokens += newUserBonus;
                     
-                    // --- NEW REDIRECT LOGIC FOR REFERRAL USER ---
                     localStorage.setItem('needsBotRedirect', 'true');
-                    // --------------------------------------------
 
                     showNotification("🎉 Referral bonus applied! You received 100 Bee Tokens.");
                     updateUI();
@@ -1527,24 +1644,20 @@
         function updateUI() {
             if (!userData) return;
             
-            // Update token and USDT values
             tokenCountEl.textContent = state.tokens;
             const totalValue = state.usdt + (state.tokens * 0.001);
             usdtValueEl.textContent = `$${totalValue.toFixed(4)}`;
             profileBeeEl.textContent = state.tokens;
             profileUsdtEl.textContent = `$${state.usdt.toFixed(4)}`;
             
-            // Update ad stats
             const dailyAds = userData.dailyAdCount || 0;
             adsWatchedEl.textContent = dailyAds;
             todayAdsEl.textContent = `${dailyAds}/${appConfig.dailyAdLimit || 100}`;
             totalAdsEl.textContent = state.adsWatched;
             
-            // Update task stats (tasksCompleted is now max 3)
             tasksCompletedEl.textContent = `${state.completedTasks.length}/${state.totalAvailableTasks}`;
             totalTasksEl.textContent = state.tasksCompleted;
             
-            // Update referral stats
             const referrals = userData.referredUsers?.length || 0;
             const referralEarnings = userData.referralEarnings || 0;
             totalReferralsEl.textContent = referrals;
@@ -1552,12 +1665,10 @@
             profileReferralsEl.textContent = referrals;
             referralCodeDisplay.textContent = userData.referralCode || "BEE2024";
             
-            // Update ad progress
             const progress = Math.min((dailyAds / (appConfig.dailyAdLimit || 100)) * 100, 100);
             adProgressBar.style.width = `${progress}%`;
             adProgressText.textContent = `${Math.round(progress)}%`;
             
-            // Update completed tasks UI (Task 1: index 0, Task 2: index 1, Task 3: index 2)
             const allTaskItems = document.querySelectorAll('#task-page .task-item');
             allTaskItems.forEach((item, index) => {
                 if (state.completedTasks.includes(index)) {
@@ -1571,18 +1682,13 @@
                 }
             });
             
-            // Update trade page balance
             document.getElementById('bee-balance-trade').textContent = state.tokens;
-            
-            // Update USDT receive amount
             updateUsdtReceive();
 
-            // Update withdrawal form and check referral lock
             withdrawalAmountInput.setAttribute('max', state.usdt.toFixed(2));
-            updateWithdrawalLockUI(); // NEW: Check and update lock UI
+            updateWithdrawalLockUI();
             updateReceiveAmountDisplay();
             
-            // Update profile name
             document.getElementById('profile-user-name').textContent = userData.name || 'Guest Bee';
         }
         
@@ -1590,30 +1696,24 @@
             const referrals = userData.referredUsers?.length || 0;
             const usdtBalance = state.usdt;
             
-            // Check only for referral lock and balance lock (for button)
             const isReferralLocked = referrals < MIN_REFERRALS_FOR_WITHDRAWAL;
             const isBalanceLocked = usdtBalance < MIN_WITHDRAWAL_USDT;
             const isLocked = isReferralLocked || isBalanceLocked;
 
             currentReferralsCount.textContent = `${referrals}/${MIN_REFERRALS_FOR_WITHDRAWAL}`;
             
-            // **New Logic: Only control the button and the warning message**
-            
-            // 1. Warning Message
             if (isReferralLocked) {
                 withdrawalReferralWarning.style.display = 'block';
                 withdrawalReferralWarning.innerHTML = `
                     <p>⚠️ **Withdrawal Lock** ⚠️</p>
                     <p>You need **${MIN_REFERRALS_FOR_WITHDRAWAL} Referrals** to unlock the **Withdraw** button. You currently have: <span id="current-referrals-count-inner">${referrals}</span></p>
                 `;
-                 // Update the inner span just in case
                 const innerCount = document.getElementById('current-referrals-count-inner');
                 if(innerCount) innerCount.textContent = `${referrals}/${MIN_REFERRALS_FOR_WITHDRAWAL}`;
             } else {
                 withdrawalReferralWarning.style.display = 'none';
             }
 
-            // 2. Withdrawal Button (Disable if EITHER referral OR balance is low)
             withdrawButton.disabled = isLocked;
             
             if (isReferralLocked) {
@@ -1624,7 +1724,6 @@
                  withdrawButton.innerHTML = '<i class="fas fa-wallet"></i> Submit Withdrawal Request';
             }
             
-            // 3. Form fields remain ENABLED (the user's request)
             withdrawalAmountInput.disabled = false;
             withdrawalMethodSelect.disabled = false;
             accountDetailsInput.disabled = false;
@@ -1641,7 +1740,6 @@
             const method = withdrawalMethodSelect.value;
             let displayText = '';
 
-            // Enforce minimum withdrawal on display
             if (usdtAmount < MIN_WITHDRAWAL_USDT) {
                 receiveAmountEl.textContent = `Min. ${MIN_WITHDRAWAL_USDT} USDT required.`;
                 receiveAmountEl.style.color = 'var(--red)';
@@ -1688,13 +1786,11 @@
         function setupRealtimeListeners() {
             if (!currentUser) return;
             
-            // Listen for user data changes
             const userRef = doc(db, "users", currentUser.uid);
             onSnapshot(userRef, (doc) => {
                 if (doc.exists()) {
                     const newUserData = doc.data();
                     
-                    // Check if the user has completed the bot opening step
                     if (newUserData.hasOpenedBot && localStorage.getItem('needsBotRedirect') === 'true') {
                          localStorage.removeItem('needsBotRedirect');
                          telegramModal.style.display = 'none';
@@ -1703,7 +1799,6 @@
                     
                     userData = newUserData;
                     
-                    // Update state from new data
                     state.tokens = userData.balance || 0;
                     state.usdt = userData.usdtBalance || 0;
                     state.adsWatched = userData.totalAdsWatched || 0;
@@ -1711,43 +1806,43 @@
                     state.completedTasks = userData.completedTasks || [];
                     state.referrals = userData.referredUsers?.length || 0;
                     state.referralEarnings = userData.referralEarnings || 0;
+                    state.hasReceivedV2Bonus = userData.hasReceivedV2Bonus || false;
                     
                     updateUI();
                 }
             });
             
-            // Listen for bot config changes
             const botConfigRef = doc(db, "config", "bot");
             onSnapshot(botConfigRef, (doc) => {
                 if (doc.exists()) {
                     botConfig = doc.data();
-                    updateTaskLinksUI(); // Update UI for new links
+                    updateTaskLinksUI();
                 }
             });
         }
         
-        // Navigation
         navItems.forEach(item => {
             item.addEventListener('click', () => {
-                // Prevent navigation if the modal is visible (enforcement)
                 if (telegramModal.style.display === 'flex') {
                     showNotification("Please open the Telegram Mini App first!");
                     return;
                 }
                 
+                if (v2UpdateModal.style.display === 'flex') {
+                    showNotification("Please close the V2 Update modal first!");
+                    return;
+                }
+                
                 const page = item.getAttribute('data-page');
                 
-                // Update active nav item
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
                 
-                // Show selected page
                 Object.values(pages).forEach(p => p.classList.remove('active'));
                 pages[page].classList.add('active');
             });
         });
         
-        // Authentication event listeners
         showSignup.addEventListener('click', () => {
             loginView.style.display = 'none';
             signupView.style.display = 'block';
@@ -1759,13 +1854,11 @@
         });
         
         skipAuth.addEventListener('click', () => {
-            // Create anonymous account
             const tempEmail = `guest_${Date.now()}@beetoken.com`;
             const tempPassword = `guest_${Math.random().toString(36).substring(2)}`;
             
             createUserWithEmailAndPassword(auth, tempEmail, tempPassword)
                 .catch(error => {
-                    // If user already exists, try login
                     signInWithEmailAndPassword(auth, tempEmail, tempPassword);
                 });
         });
@@ -1801,7 +1894,6 @@
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 
-                // Store referral code to apply after user creation
                 if (referralCode) {
                     localStorage.setItem('pendingReferralCode', referralCode);
                 } else {
@@ -1814,18 +1906,20 @@
             }
         });
         
-        // Daily Tap functionality
         airdropButton.addEventListener('click', async () => {
             if (!currentUser) return;
-            // CHECK MODAL
             if (telegramModal.style.display === 'flex') {
                 showNotification("Please open the Telegram Mini App first!");
                 return;
             }
             
+            if (v2UpdateModal.style.display === 'flex') {
+                showNotification("Please close the V2 Update modal first!");
+                return;
+            }
+            
             const now = new Date();
             
-            // Check if 24 hours have passed since last tap
             if (userData.lastAirdrop) {
                 const timeDiff = now - userData.lastAirdrop.toDate();
                 const hoursDiff = timeDiff / (1000 * 60 * 60);
@@ -1845,7 +1939,6 @@
                 }
             }
             
-            // Claim airdrop
             const reward = 50;
             const userRef = doc(db, "users", currentUser.uid);
             
@@ -1855,7 +1948,6 @@
                     lastAirdrop: serverTimestamp()
                 });
                 
-                // Update local state
                 userData.balance = (userData.balance || 0) + reward;
                 state.tokens += reward;
                 userData.lastAirdrop = now;
@@ -1867,29 +1959,29 @@
             }
         });
         
-        // Watch ad functionality
         watchAdButton.addEventListener('click', async () => {
             if (!currentUser) return;
-            // CHECK MODAL
             if (telegramModal.style.display === 'flex') {
                 showNotification("Please open the Telegram Mini App first!");
                 return;
             }
             
-            // Check daily limit
+            if (v2UpdateModal.style.display === 'flex') {
+                showNotification("Please close the V2 Update modal first!");
+                return;
+            }
+            
             const dailyAds = userData.dailyAdCount || 0;
             if (dailyAds >= (appConfig.dailyAdLimit || 100)) {
                 showNotification('You have reached the daily limit of ads. Come back tomorrow!');
                 return;
             }
             
-            // Check hourly limit (50 per hour)
             const now = new Date();
             if (userData.lastAdTime) {
                 const timeDiff = now - userData.lastAdTime.toDate();
                 const minutesDiff = timeDiff / (1000 * 60);
                 
-                // If less than an hour has passed and user watched 50 ads in that hour
                 if (minutesDiff < 60 && dailyAds % 50 === 0 && dailyAds > 0) {
                     const remainingMinutes = 60 - minutesDiff;
                     showNotification(`Hourly limit reached. Wait ${Math.ceil(remainingMinutes)} minutes before watching more ads.`);
@@ -1897,18 +1989,15 @@
                 }
             }
             
-            // DOM element for Ad Display
             const currentAdDisplay = document.getElementById('current-ad');
             
-            // --- GIGAPUB AD DISPLAY LOGIC START ---
             if (window.showGiga) {
                 watchAdButton.disabled = true;
                 watchAdButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading Ad...';
                 
                 window.showGiga()
                     .then(async () => {
-                        // Reward user on successful ad view/close
-                        const reward = 10;
+                        const reward = AD_REWARD_TOKENS; // Now 100 tokens
                         const userRef = doc(db, "users", currentUser.uid);
                         
                         try {
@@ -1919,14 +2008,12 @@
                                 lastAdTime: serverTimestamp()
                             });
                             
-                            // Update local state
                             userData.balance = (userData.balance || 0) + reward;
                             userData.totalAdsWatched = (userData.totalAdsWatched || 0) + 1;
                             userData.dailyAdCount = (userData.dailyAdCount || 0) + 1;
                             state.tokens += reward;
                             state.adsWatched = userData.totalAdsWatched;
                             
-                            // Update ad display
                             currentAdDisplay.innerHTML = `
                                 <i class="fas fa-check-circle" style="color: var(--green); font-size: 40px;"></i>
                                 <p style="margin-top: 10px;">Ad completed!</p>
@@ -1936,10 +2023,9 @@
                             showNotification(`✅ Ad watched! You earned ${reward} Bee Tokens.`);
                             updateUI();
                             
-                            // Reset button after a short delay
                             setTimeout(() => {
                                 watchAdButton.disabled = false;
-                                watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
+                                watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 100 Tokens';
                                 currentAdDisplay.innerHTML = `
                                     <i class="fas fa-video" style="font-size: 40px; color: var(--blue);"></i>
                                     <p style="margin-top: 10px;">Ready to watch an ad!</p>
@@ -1956,11 +2042,10 @@
                         
                         setTimeout(() => {
                             watchAdButton.disabled = false;
-                            watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
+                            watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 100 Tokens';
                         }, 1000);
                     });
             } else {
-                // Fallback for demo/simulation
                 showNotification('Ad network not initialized. Simulating reward in 5s...');
                 
                 let countdown = 5;
@@ -1978,8 +2063,7 @@
                     if (countdown <= 0) {
                         clearInterval(countdownInterval);
                         
-                        // Reward user
-                        const reward = 10;
+                        const reward = AD_REWARD_TOKENS; // Now 100 tokens
                         const userRef = doc(db, "users", currentUser.uid);
                         
                         try {
@@ -1990,14 +2074,12 @@
                                 lastAdTime: serverTimestamp()
                             });
                             
-                            // Update local state
                             userData.balance = (userData.balance || 0) + reward;
                             userData.totalAdsWatched = (userData.totalAdsWatched || 0) + 1;
                             userData.dailyAdCount = (userData.dailyAdCount || 0) + 1;
                             state.tokens += reward;
                             state.adsWatched = userData.totalAdsWatched;
                             
-                            // Update ad display
                             currentAdDisplay.innerHTML = `
                                 <i class="fas fa-check-circle" style="color: var(--green); font-size: 40px;"></i>
                                 <p style="margin-top: 10px;">Ad completed!</p>
@@ -2007,10 +2089,9 @@
                             showNotification(`✅ Ad watched! You earned ${reward} Bee Tokens.`);
                             updateUI();
                             
-                            // Reset button after a short delay
                             setTimeout(() => {
                                 watchAdButton.disabled = false;
-                                watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 10 Tokens';
+                                watchAdButton.innerHTML = '<i class="fas fa-play-circle"></i> Watch Ad & Earn 100 Tokens';
                                 currentAdDisplay.innerHTML = `
                                     <i class="fas fa-video" style="font-size: 40px; color: var(--blue);"></i>
                                     <p style="margin-top: 10px;">Ready to watch an ad!</p>
@@ -2023,45 +2104,42 @@
                     }
                 }, 1000);
             }
-            // --- GIGAPUB AD DISPLAY LOGIC END ---
         });
         
-        // Task completion
         taskItems.forEach((item, index) => {
             item.addEventListener('click', async () => {
                 if (!currentUser) return;
-                // CHECK MODAL
                 if (telegramModal.style.display === 'flex') {
                     showNotification("Please open the Telegram Mini App first!");
                     return;
                 }
                 
+                if (v2UpdateModal.style.display === 'flex') {
+                    showNotification("Please close the V2 Update modal first!");
+                    return;
+                }
+                
                 const taskIndex = index;
-                const reward = state.taskRewards[taskIndex]; // Get reward from state
+                const reward = state.taskRewards[taskIndex];
                 let link = '';
 
-                // Determine the correct link based on task index
                 if (taskIndex === 0) link = taskLinks.telegram;
                 else if (taskIndex === 1) link = taskLinks.youtube;
                 else if (taskIndex === 2) {
                      link = taskLinks.telegramBot;
-                     // Set the hasOpenedBot flag on first click of the bot task
                      if (!state.completedTasks.includes(taskIndex)) {
                           const userRef = doc(db, "users", currentUser.uid);
                           await updateDoc(userRef, { hasOpenedBot: true });
                      }
                 }
                 
-                // Always open the link
                 window.open(link, '_blank');
                 
-                // Only claim token once
                 if (state.completedTasks.includes(taskIndex)) {
                     showNotification('You have already claimed the reward for this task!');
                     return;
                 }
                 
-                // Claim reward
                 const userRef = doc(db, "users", currentUser.uid);
                 const updatedTasks = [...state.completedTasks, taskIndex];
                 
@@ -2071,7 +2149,6 @@
                         completedTasks: updatedTasks
                     });
                     
-                    // Update local state
                     userData.balance = (userData.balance || 0) + reward;
                     state.tokens += reward;
                     state.completedTasks = updatedTasks;
@@ -2085,12 +2162,15 @@
             });
         });
         
-        // Convert tokens to USDT
         convertButton.addEventListener('click', async () => {
             if (!currentUser) return;
-            // CHECK MODAL
             if (telegramModal.style.display === 'flex') {
                 showNotification("Please open the Telegram Mini App first!");
+                return;
+            }
+            
+            if (v2UpdateModal.style.display === 'flex') {
+                showNotification("Please close the V2 Update modal first!");
                 return;
             }
             
@@ -2115,7 +2195,6 @@
                     usdtBalance: (userData.usdtBalance || 0) + usdtAmount
                 });
                 
-                // Update local state
                 userData.balance = (userData.balance || 0) - beeAmount;
                 userData.usdtBalance = (userData.usdtBalance || 0) + usdtAmount;
                 state.tokens = userData.balance;
@@ -2129,7 +2208,6 @@
             }
         });
         
-        // Copy referral link
         copyReferralBtn.addEventListener('click', () => {
             const referralLink = `${window.location.origin}${window.location.pathname}?ref=${userData.referralCode}`;
             
@@ -2138,7 +2216,6 @@
                     showNotification('Referral link copied to clipboard!');
                 })
                 .catch(() => {
-                    // Fallback for older browsers
                     const textArea = document.createElement('textarea');
                     textArea.value = referralLink;
                     document.body.appendChild(textArea);
@@ -2149,16 +2226,18 @@
                 });
         });
         
-        // Withdraw functionality
         withdrawButton.addEventListener('click', async () => {
             if (!currentUser) return;
-            // CHECK MODAL
             if (telegramModal.style.display === 'flex') {
                 showNotification("Please open the Telegram Mini App first!");
                 return;
             }
             
-            // --- FINAL LOCK CHECK ---
+            if (v2UpdateModal.style.display === 'flex') {
+                showNotification("Please close the V2 Update modal first!");
+                return;
+            }
+            
             const referrals = userData.referredUsers?.length || 0;
             const usdtAmount = parseFloat(withdrawalAmountInput.value);
             const usdtBalance = state.usdt;
@@ -2177,18 +2256,15 @@
                 showNotification('Insufficient USDT balance for this withdrawal.');
                 return;
             }
-            // --------------------------
 
             const method = withdrawalMethodSelect.value;
             const accountDetails = accountDetailsInput.value.trim();
-
 
             if (!accountDetails) {
                 showNotification('Please enter your account number/ID for the selected method.');
                 return;
             }
             
-            // Calculate equivalent receive amount for the withdrawal record
             let receiveValue = usdtAmount.toFixed(2);
             let receiveCurrency = 'USDT';
             
@@ -2200,19 +2276,15 @@
                 receiveCurrency = 'INR';
             }
 
-            // Create withdrawal request
             try {
-                // Deduct USDT first
                 const userRef = doc(db, "users", currentUser.uid);
                 await updateDoc(userRef, {
                     usdtBalance: (userData.usdtBalance || 0) - usdtAmount
                 });
 
-                // Update local state
                 userData.usdtBalance -= usdtAmount;
                 state.usdt = userData.usdtBalance;
                 
-                // Add withdrawal request to the 'withdrawals' collection
                 await addDoc(collection(db, "withdrawals"), {
                     userId: currentUser.uid,
                     userName: userData.name,
@@ -2226,7 +2298,7 @@
                     requestedAt: serverTimestamp()
                 });
 
-                updateUI(); // Reflect the deducted balance immediately
+                updateUI();
                 
                 showNotification(`✅ Withdrawal request submitted successfully! Amount: ${usdtAmount.toFixed(2)} USDT via ${method}.`, 4000);
             } catch (error) {
@@ -2234,11 +2306,9 @@
             }
         });
         
-        // Update countdowns
         function updateCountdowns() {
             if (!userData) return;
             
-            // Daily tap countdown
             if (userData.lastAirdrop) {
                 const now = new Date();
                 const timeDiff = now - userData.lastAirdrop.toDate();
@@ -2260,13 +2330,11 @@
                 }
             }
             
-            // Ad countdown
             if (userData.lastAdTime) {
                 const now = new Date();
                 const timeDiff = now - userData.lastAdTime.toDate();
                 const secondsDiff = timeDiff / 1000;
                 
-                // 10-second cooldown between ads
                 if (secondsDiff < 10) {
                     const remainingSeconds = 10 - Math.floor(secondsDiff);
                     adCountdownEl.textContent = `${remainingSeconds}s`;
@@ -2274,7 +2342,6 @@
                     return;
                 }
                 
-                // Check hourly limit
                 const minutesDiff = timeDiff / (1000 * 60);
                 const dailyAds = userData.dailyAdCount || 0;
                 if (minutesDiff < 60 && dailyAds % 50 === 0 && dailyAds > 0) {
@@ -2289,37 +2356,29 @@
             watchAdButton.disabled = (userData.dailyAdCount || 0) >= (appConfig.dailyAdLimit || 100);
         }
         
-        // Initialize app
         function initApp() {
-            // Hide splash screen
             splashScreen.style.display = 'none';
             
-            // Check if user is already logged in
             if (auth.currentUser) {
                 authContainer.style.display = 'none';
                 appContainer.style.display = 'block';
-                // handleAuthStateChange will take care of showing the modal if needed
             } else {
                 authContainer.style.display = 'flex';
             }
             
-            // Update countdowns every second
             setInterval(updateCountdowns, 1000);
             
-            // Show welcome message
             setTimeout(() => {
                 showNotification('🐝 Welcome to Bee Token! Start earning crypto today!');
             }, 500);
         }
         
-        // Start the app with a 5-second delay for the splash screen
         setTimeout(initApp, 5000);
         
-        // Make functions available globally
         window.updateUsdtReceive = updateUsdtReceive;
         window.setPercentage = setPercentage;
         window.showNotification = showNotification;
-        window.updateReceiveAmountDisplay = updateReceiveAmountDisplay; // Export new function
+        window.updateReceiveAmountDisplay = updateReceiveAmountDisplay;
     </script>
 
     <script data-project-id="4790">
